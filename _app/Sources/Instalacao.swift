@@ -9,7 +9,7 @@ let appAbertoEm = Date()
 
 // MARK: - Utilidades
 
-func rodar(_ caminho: String, _ args: [String]) -> (codigo: Int32, saida: String) {
+func executar(_ caminho: String, _ args: [String]) -> (codigo: Int32, saida: String) {
     let p = Process()
     p.executableURL = URL(fileURLWithPath: caminho)
     p.arguments = args
@@ -25,7 +25,7 @@ func rodar(_ caminho: String, _ args: [String]) -> (codigo: Int32, saida: String
 /// A identidade da assinatura de um app, quando ela é fixa (igual de uma versão para a outra).
 /// App montado localmente, sem assinatura fixa, devolve nil.
 func requisitoFixo(_ caminho: String) -> String? {
-    let r = rodar("/usr/bin/codesign", ["-d", "-r-", caminho])
+    let r = executar("/usr/bin/codesign", ["-d", "-r-", caminho])
     for linha in r.saida.components(separatedBy: "\n") {
         if linha.hasPrefix("designated =>") {
             return linha.contains("certificate leaf") ? linha : nil
@@ -214,11 +214,11 @@ final class Atualizador {
         try? fm.createDirectory(at: pastaNova, withIntermediateDirectories: true)
         let arquivo = pastaNova.appendingPathComponent("GoatMeet.zip")
         guard (try? zip.write(to: arquivo)) != nil else { return }
-        if rodar("/usr/bin/ditto", ["-x", "-k", arquivo.path, pastaNova.path]).codigo != 0 { return }
+        if executar("/usr/bin/ditto", ["-x", "-k", arquivo.path, pastaNova.path]).codigo != 0 { return }
         try? fm.removeItem(at: arquivo)
         let novo = pastaNova.appendingPathComponent("Goat Meet.app").path
         let meu = requisitoFixo(Bundle.main.bundlePath)
-        if !fm.fileExists(atPath: novo) || rodar("/usr/bin/codesign", ["--verify", "--strict", novo]).codigo != 0
+        if !fm.fileExists(atPath: novo) || executar("/usr/bin/codesign", ["--verify", "--strict", novo]).codigo != 0
             || meu == nil || meu != requisitoFixo(novo) {
             gmLog("Atualização " + nova + " recusada: a assinatura não confere.")
             try? fm.removeItem(at: pastaNova)
