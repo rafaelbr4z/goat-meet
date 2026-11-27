@@ -1314,7 +1314,7 @@ function desenharConfig(abre) {
       + '<button class="prow" data-sw="geral.login">Abrir junto com o Mac<span class="v"><span class="tgl' + (CFG.geral.login ? ' on' : '') + '"></span></span></button>'
       + '<div class="pop-sep"></div>'
       + '<button class="prow" data-tela="pasta">Pasta das gravações<span class="v">' + esc(CFG.pasta.caminho.split('/').pop()) + seta + '</span></button>'
-      + (perm ? '<div class="pop-foot">Microfone e som do Mac liberados</div>' : '');
+      + (perm ? '<div class="pop-foot">Microfone e som do Mac liberados' + (CFG.versao ? ' · versão ' + esc(CFG.versao) : '') + '</div>' : '');
   }
   $('#veil').innerHTML = '<div class="pop' + (abre ? ' abre' : '') + '">' + h + '</div>';
 }
@@ -1708,7 +1708,7 @@ document.addEventListener('paste', (ev) => { const onde = ev.target.nodeType ===
   const e = await chamar('estado');
   if (e) estado(e);
   await carregarLista(true);
-  if (nativo) { const su = await chamar('setup'); if (su && su.atualizacao) { S.atualizacao = su.atualizacao; desenharTopo(); } if (su && su.precisa) abrirSetup(); }
+  if (nativo) { const su = await chamar('setup'); if (su && su.versao) CFG.versao = su.versao; if (su && su.atualizacao) { S.atualizacao = su.atualizacao; desenharTopo(); } if (su && su.precisa) abrirSetup(); }
   if (!nativo) setTimeout(() => mostrarProx({ titulo: 'Alinhamento semanal', inicio: Date.now() + 5 * 60000 }), 1500);
   setInterval(async () => {
     if (document.hidden) return;
