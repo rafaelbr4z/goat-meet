@@ -31,7 +31,8 @@ if [ -f "$DIR/icone.png" ]; then
   ) || echo "Aviso: não consegui gerar o ícone (o app funciona sem ele)."
 fi
 
-codesign --force --sign - --identifier com.braz.goatmeet "$APP"
+# Assinatura: com GOAT_ASSINATURA definida usa essa identidade (fixa); sem ela, assinatura local.
+codesign --force --sign "${GOAT_ASSINATURA:--}" --identifier com.braz.goatmeet "$APP"
 echo "MONTAGEM_OK"
 
 if [ "${1:-}" = "--verificar" ]; then exit 0; fi
