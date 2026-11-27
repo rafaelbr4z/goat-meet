@@ -12,3 +12,4 @@ _app/*.log
 _app/.atualizando/
 _app/.t
 .DS_Store
+_app/assinatura/
