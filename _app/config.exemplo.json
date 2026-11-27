@@ -1,0 +1,7 @@
+{
+  "nome": "Seu nome",
+  "pasta": "~/Goat Meet/Meet",
+  "login": false,
+  "agenda": { "auto": true, "ligar": true },
+  "avisos": { "mac": true, "opcoes": [30, 15, 5], "antes": [15, 5] }
+}

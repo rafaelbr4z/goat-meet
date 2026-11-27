@@ -1,0 +1,14 @@
+# Nada do que é gravado ou pessoal entra no repositório
+Reunioes/
+Claude outputs/
+_app/config.json
+_app/vocabulario.txt
+_app/models/
+_app/build/
+_app/tmp/
+_app/diag/
+_app/backup-v2/
+_app/*.log
+_app/.atualizando/
+_app/.t
+.DS_Store

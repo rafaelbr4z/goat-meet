@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.braz.goatmeet</string>
+    <key>CFBundleName</key>
+    <string>Goat Meet</string>
+    <key>CFBundleDisplayName</key>
+    <string>Goat Meet</string>
+    <key>CFBundleExecutable</key>
+    <string>GoatMeet</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>3.0</string>
+    <key>CFBundleVersion</key>
+    <string>3</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSCalendarsUsageDescription</key>
+    <string>O Goat Meet registra na agenda as reuniões que você grava e avisa quando uma reunião está chegando.</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>O Goat Meet registra na agenda as reuniões que você grava e avisa quando uma reunião está chegando.</string>
+    <key>NSRemovableVolumesUsageDescription</key>
+    <string>O Goat Meet guarda as gravações na pasta que você escolheu.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>O Goat Meet grava a sua voz nas reuniões para transcrever no seu Mac.</string>
+</dict>
+</plist>

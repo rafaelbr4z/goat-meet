@@ -1,0 +1,54 @@
+/* =====================================================================
+   Goat Meet · Design System (tokens)
+   Claro e monocromático. Cantos bem redondos, botões em pílula.
+   Uma única cor de sinal (vermelho), só para gravar e erro.
+   Nenhuma fonte serifada: Nohemi nos títulos, SF Pro no texto.
+   ===================================================================== */
+:root{
+  /* cor */
+  --bg:#fafafa;            /* fundo do app */
+  --surface:#ffffff;       /* cartões, trilho lateral */
+  --border:#e6e6e6;        /* contorno de cartões e divisórias */
+  --ink:#0a0a0a;           /* títulos, botão principal, superfícies invertidas */
+  --text:#6b6b6b;          /* texto corrido */
+  --muted:#b0b0b0;         /* datas, apoio */
+  --faint:#d4d4d4;         /* marcadores, contorno de checkbox */
+  --fill:#efefef;          /* botão secundário, campos */
+  --fill-hover:#e5e5e5;
+  --inverse-surface:#0a0a0a; /* fundo invertido: doca, aviso, cartão em hover */
+  --inverse-text:#ffffff;  /* texto sobre preto */
+  --inverse-body:#b4b4b4;  /* texto corrido sobre preto */
+  --inverse-muted:#8c8c8c;
+  --inverse-fill:#262626;  /* controles e hover sobre preto; hover do botão preto */
+  --inverse-fill-hover:#363636;
+  --inverse-press:#e6e6e6; /* hover de botão branco sobre preto */
+  --inverse-track:#4a4a4a; /* barras e trilhos sobre preto */
+  --signal:#ff4a2b;        /* só gravar (botão, ponto, pulso) e erro */
+  --signal-soft:#ff8a73;   /* texto de erro sobre preto */
+
+  /* forma */
+  --r-card:28px; --r-dock:24px; --r-row:16px; --r-ctl:14px; --r-sm:8px; --r-pill:999px;
+  --shadow-float:0 16px 44px rgba(0,0,0,.18);  /* doca, avisos, painéis e cartão em hover */
+  --shadow-lift:0 10px 30px rgba(0,0,0,.06);   /* botões redondos do canto */
+
+  /* espaço (base 4) */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:28px; --s7:40px; --s8:56px;
+
+  /* canto inferior direito: botões redondos e o que abre ao lado deles */
+  --edge:28px;      /* distância da borda da janela */
+  --fab:52px;       /* botão redondo */
+  --fab-gap:20px;   /* entre um botão redondo e outro */
+  --float-x:104px;  /* borda direita de painéis, aviso e doca (edge + fab + 24) */
+
+  /* tipo */
+  --font-display:"Nohemi",-apple-system,"SF Pro Display","Helvetica Neue",sans-serif;
+  --font-text:-apple-system,"SF Pro Text","Helvetica Neue",sans-serif;
+  --t-page:500 64px/1 var(--font-display);       /* título da página */
+  --t-display:500 44px/1.08 var(--font-display); /* título da reunião aberta */
+  --t-title:500 22px/1.2 var(--font-display);    /* título de cartão */
+  --t-heading:500 17px/1.3 var(--font-display);  /* seções */
+  --t-lead:400 18px/1.6 var(--font-text);        /* abertura do resumo, data sob o título da página */
+  --t-body:400 16px/1.6 var(--font-text);        /* texto corrido */
+  --t-label:500 15px/1 var(--font-text);         /* botões */
+  --t-meta:400 14px/1.3 var(--font-text);        /* datas, apoio */
+}
