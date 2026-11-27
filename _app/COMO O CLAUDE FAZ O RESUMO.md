@@ -25,15 +25,6 @@ Leia `reuniao.json` e `transcricao.md` inteiros. Grave `minuta.md` na pasta da r
 
 > Abertura em 2 a 3 frases: o que foi a reunião e o que saiu dela.
 
-## Projeto
-- **Cliente:** quem contratou
-- **Construtora:** 
-- **Local:** cidade ou endereço do empreendimento
-- **Entrega:** o que o Braz vai entregar (peça, duração, formatos)
-- **Valor:** 
-- **Pagamento:** como e quando paga
-- **Prazo:** data ou período da entrega
-
 ## Tarefas
 - [ ] **Responsável** — o que fazer (prazo: dd/mm) [12:34]
 
@@ -54,9 +45,9 @@ Leia `reuniao.json` e `transcricao.md` inteiros. Grave `minuta.md` na pasta da r
 
 Regras:
 
-- A ordem é sempre essa: o que pede ação (ficha e tarefas) vem antes do que é registro.
+- A ordem é sempre essa: o que pede ação (tarefas e decisões) vem antes do que é registro.
+- O resumo da reunião traz só o que foi dito nela. Dados fixos do trabalho (cliente, valor, prazo) não entram aqui como ficha: eles ficam na ficha do projeto, explicada mais abaixo.
 - O bloco `>` depois do título aparece no cartão da reunião. Sempre inclua. Curto: até 220 caracteres aparecem no cartão.
-- **Projeto**: escreva sempre as sete linhas, nessa ordem e com esses nomes. Preencha só com o que foi dito na reunião. O que não foi dito fica vazio depois dos dois pontos: o Braz preenche no app. Se o valor é uma dedução sua, termine com "(dedução)". Não use `{?...}` nem `[mm:ss]` nessas linhas.
 - **Tarefas**: cada item começa com `- [ ]`. O app deixa o Braz marcar como feito, e aí vira `- [x]`. Prazo, só quando foi dito, exatamente assim: `(prazo: dd/mm)`. Sem prazo, não escreva nada. Use "Braz" para o que ele assumiu; para os outros, o nome se ele aparece na conversa, senão "Cliente", "Agência" ou "Outros". Tudo que envolve dinheiro e documento vira tarefa: emitir nota fiscal, mandar orçamento, cobrar parcela.
 - **Conceito do filme**: só quando a reunião é sobre um filme ou uma peça. Se não for, deixe a seção de fora.
 - **O que foi falado**: por tema, não em ordem cronológica. Não repita o que já está nas outras seções.
@@ -66,9 +57,10 @@ Regras:
 
 ## Projetos
 
-O Braz agrupa reuniões do mesmo trabalho em projetos. A lista fica em `_claude/projetos.json`, dentro da pasta das gravações: cada projeto tem `id`, `nome` e `ficha` (os mesmos sete campos da seção Projeto). A reunião que está em um projeto tem o `id` dele no campo `projeto` do `reuniao.json`.
+O Braz agrupa reuniões do mesmo trabalho em projetos. A lista fica em `_claude/projetos.json`, dentro da pasta das gravações: cada projeto tem `id`, `nome` e `ficha`. A ficha tem sete campos, com estes nomes: `Cliente`, `Construtora`, `Local`, `Entrega`, `Valor`, `Pagamento` e `Prazo`. A reunião que está em um projeto tem o `id` dele no campo `projeto` do `reuniao.json`.
 
-- Ao escrever o resumo de uma reunião que tem `projeto`, atualize também a `ficha` desse projeto em `projetos.json`: preencha os campos vazios e corrija os que a reunião mudou (um prazo novo, um valor fechado). Não apague campo que o Braz preencheu, a não ser que a reunião tenha dito outra coisa.
+- Ao escrever o resumo de uma reunião que tem `projeto`, atualize também a `ficha` desse projeto em `projetos.json`: preencha os campos vazios e corrija os que a reunião mudou (um prazo novo, um valor fechado). Preencha só com o que foi dito. O que não foi dito fica vazio: o Braz preenche no app. Se o valor é uma dedução sua, termine com "(dedução)". Não apague campo que o Braz preencheu, a não ser que a reunião tenha dito outra coisa.
+- Reunião sem `projeto` não tem ficha. Não escreva ficha nenhuma para ela.
 - Não crie projeto nem mude o campo `projeto` de uma reunião por conta própria. Quem agrupa é o Braz, no app.
 - Quando o pedido for o resumo de um projeto (várias reuniões juntas), leia o resumo e, se precisar, a transcrição de cada uma, e responda no chat com: a ficha atual, as tarefas abertas somadas (dizendo de qual reunião veio cada uma), as decisões que continuam valendo e o que mudou de uma reunião para a outra. Atualize a `ficha` do projeto se encontrar informação nova.
 

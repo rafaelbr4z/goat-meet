@@ -10,7 +10,7 @@ rm -rf diag; mkdir -p diag; cd diag || exit 1
 echo "== vozes pt"; say -v '?' | grep -i -E "pt_BR|pt-BR"
 VOZ="$(say -v '?' | grep -i 'pt_BR' | head -1 | awk '{print $1}')"
 echo "voz: $VOZ"
-say -v "${VOZ:-Luciana}" -o a.aiff "Bom dia pessoal. Vamos começar a reunião sobre o filme do Petra Residence. O prazo de entrega é sexta-feira. [[slnc 25000]] Depois do silêncio, a segunda parte: o cliente pediu para trocar a trilha e ajustar a cor da fachada."
+say -v "${VOZ:-Luciana}" -o a.aiff "Bom dia pessoal. Vamos começar a reunião sobre o filme do Residencial Mirante. O prazo de entrega é sexta-feira. [[slnc 25000]] Depois do silêncio, a segunda parte: o cliente pediu para trocar a trilha e ajustar a cor da fachada."
 echo "== afconvert"; which afconvert
 afconvert -f WAVE -d LEI16@16000 -c 1 a.aiff a.wav; ls -la
 echo "== transcrevendo"

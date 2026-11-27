@@ -320,6 +320,10 @@ input{font:inherit;color:inherit}
 .bin:hover{background:var(--fill);color:var(--ink)}
 .bin.sure,.bin.sure:hover{padding:0 14px;background:var(--signal);color:var(--inverse-text)}
 .card.sel{outline:2.5px solid var(--inverse-surface);outline-offset:3px}
+.ptag.ex{background:none;box-shadow:inset 0 0 0 1.5px var(--faint);padding:0 13px;cursor:default}
+.ptag.ex::before{display:none}
+.exhint{font:var(--t-body);color:var(--text);max-width:620px;margin-top:var(--s6)}
+.projline{margin-top:var(--s3)}
 
 /* ---- projetos na página inicial ---- */
 .today.com{margin-bottom:var(--s5)}
@@ -382,6 +386,38 @@ input{font:inherit;color:inherit}
 .addli:hover{color:var(--ink);background:var(--fill)}
 .edbar{display:flex;align-items:center;gap:var(--s2)}
 
+/* ---- preparação (primeira abertura) ---- */
+.setup{position:absolute;inset:0;z-index:30;background:var(--bg);display:grid;place-items:center;padding:var(--s8);overflow-y:auto}
+.setup[hidden]{display:none}
+.su{width:min(560px,100%)}
+.su.entra{animation:in .35s both}
+.su-steps{display:flex;gap:6px;margin-bottom:var(--s7)}
+.su-steps i{flex:1;height:4px;border-radius:2px;background:var(--fill-hover);transition:background .3s}
+.su-steps i.on{background:var(--ink)}
+.su>.meta{display:block;margin-bottom:var(--s3)}
+.su h1{font:var(--t-display);letter-spacing:-.025em}
+.su .lead{font:var(--t-lead);color:var(--text);margin-top:var(--s4)}
+.su-body{margin-top:var(--s6)}
+.su-in{width:100%;height:44px;border-radius:var(--r-pill);border:0;background:var(--fill);padding:0 var(--s5);outline:none;font:400 16px/1 var(--font-text);color:var(--ink);-webkit-user-select:text;user-select:text}
+.su-in:focus{background:var(--fill-hover)}
+.su-rows{border:1px solid var(--border);border-radius:var(--r-row);background:var(--surface);overflow:hidden}
+.su-row{display:flex;align-items:center;gap:var(--s4);min-height:76px;padding:var(--s3) var(--s5);border-top:1px solid var(--border)}
+.su-row:first-child{border-top:0}
+.su-row div{flex:1;min-width:0}
+.su-row div b{display:block;font:500 16px/1.3 var(--font-text);color:var(--ink)}
+.su-row div span{display:block;font:var(--t-meta);color:var(--text);margin-top:2px}
+.su-row .btn{flex:none;min-width:104px}
+.su-ok{display:inline-flex;align-items:center;justify-content:flex-end;gap:10px;min-width:104px;height:44px;font:var(--t-label);color:var(--ink);flex:none}
+.su-ok i{display:block;width:22px;height:22px;border-radius:50%;background:var(--ink);position:relative;flex:none}
+.su-ok i::after{content:"";position:absolute;left:7px;top:7.5px;width:8px;height:4px;border-left:1.8px solid var(--inverse-text);border-bottom:1.8px solid var(--inverse-text);transform:rotate(-45deg)}
+.su-path code{font:500 16px/1.3 var(--font-text);color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.su-bar{height:8px;border-radius:var(--r-pill);background:var(--fill-hover);overflow:hidden}
+.su-bar i{display:block;height:100%;width:0;border-radius:var(--r-pill);background:var(--ink);transition:width .25s linear}
+.su-prog{display:flex;justify-content:space-between;margin-top:var(--s3);font:var(--t-meta);color:var(--text);font-variant-numeric:tabular-nums}
+.su-note{font:var(--t-meta);color:var(--muted);margin-top:var(--s4)}
+.su-foot{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s7)}
+.su-foot .sp{flex:1}
+
 /* ---- página do projeto ---- */
 .sheet.wide{max-width:none;margin-left:0;margin-right:0}
 .sheet.wide>*{max-width:800px}
@@ -403,6 +439,7 @@ input{font:inherit;color:inherit}
 <div id="fab"></div>
 <div class="prox" id="prox" hidden></div>
 <div class="veil" id="veil" hidden></div>
+<div class="setup" id="setup" hidden></div>
 <div class="selbar" id="selbar" hidden></div>
 <div class="menu" id="menu" hidden></div>
 <div class="toast" id="toast"></div>
@@ -425,7 +462,7 @@ function chamar(cmd, args) {
 }
 
 // ---------- estado ----------
-const S = { lista: [], sel: null, det: null, aba: 'minuta', q: '', gravando: false, inicio: 0, micOk: true, tituloNovo: '', ocupado: false, som: null, prox: null, tituloPend: '', pop: null, agenda: [], proj: null, projetos: [], projDet: {}, marc: new Set(), menu: null, armado: false, editar: false };
+const S = { lista: [], sel: null, det: null, aba: 'minuta', q: '', gravando: false, inicio: 0, micOk: true, tituloNovo: '', ocupado: false, som: null, prox: null, tituloPend: '', pop: null, agenda: [], proj: null, projetos: [], projDet: {}, marc: new Set(), menu: null, armado: false, editar: false, setup: null };
 const $ = (s) => document.querySelector(s);
 // No app, quem toca o áudio é o próprio Mac (funciona com a pasta em qualquer disco). Este objeto imita o player da página.
 function somNativo() {
@@ -582,13 +619,67 @@ function markdown(src) {
   return h;
 }
 
+// ---------- reunião de exemplo: aparece enquanto não existe nenhuma gravação ----------
+const EX = '_exemplo';
+function exemplo() {
+  if (exemplo.d) return exemplo.d;
+  const quando = new Date(); quando.setDate(quando.getDate() - 1); quando.setHours(15, 0, 0, 0);
+  const prazo = new Date(); prazo.setDate(prazo.getDate() + 7);
+  const resumo = 'Primeira reunião do filme de lançamento do Residencial Mirante. Ficou fechado um filme de 60 segundos que começa no parque e termina na fachada, com animatic em uma semana. Falta a agência mandar o roteiro e as imagens de fachada.';
+  const minuta = [
+    '# Filme de lançamento do Mirante',
+    '> ' + resumo,
+    '## Tarefas',
+    '- [ ] **Você** — montar o animatic com as imagens que já existem (prazo: ' + pad(prazo.getDate()) + '/' + pad(prazo.getMonth() + 1) + ') [18:40]',
+    '- [ ] **Você** — mandar três opções de trilha para aprovação [24:10]',
+    '- [ ] **Agência** — enviar o roteiro revisado [09:15]',
+    '- [ ] **Agência** — entregar as imagens de fachada e cobertura [14:30]',
+    '- [x] **Agência** — compartilhar a pasta com a identidade visual',
+    '## Decisões',
+    '- O filme tem 60 segundos, em 16:9, com uma versão vertical de 15 segundos [05:20]',
+    '- Começa pelo parque e pela vida do bairro, e só depois mostra o prédio [07:45]',
+    '- Sem locução: texto na tela e trilha [11:30]',
+    '- Duas rodadas de ajuste incluídas; o que passar disso é orçado à parte [27:05]',
+    '## Conceito do filme',
+    '- A ideia é "morar ao lado do parque": o bairro é o personagem, o prédio é a chegada [07:45]',
+    '- Abre com a manhã no parque, gente correndo e o café da esquina',
+    '- Um aéreo liga o parque ao terreno e mostra a distância a pé [12:50]',
+    '- Fecha na fachada ao entardecer, com o nome do empreendimento',
+    '- Referência: o filme enviado pela agência, com cortes rápidos e texto grande na tela [10:05]',
+    '## O que foi falado',
+    '### Imagens de drone',
+    '- As imagens atuais foram feitas ao meio-dia e ficaram duras; vale regravar no fim da tarde [13:40]',
+    '- O drone precisa pegar o prédio de frente, com o parque ao fundo [14:05]',
+    '### Lazer e paisagismo',
+    '- A praça interna e a pista de caminhada ainda estão em projeto; entram como imagem 3D [16:20]',
+    '- O paisagismo do térreo é o ponto forte e merece um take só dele [17:10]',
+    '### Material disponível',
+    '- Prontos: apartamento decorado e áreas comuns [20:15]',
+    '- Faltam fachada e cobertura, previstas para a próxima semana [14:30]',
+    '## Em aberto',
+    '- A versão vertical usa as mesmas cenas ou pede um corte próprio?',
+    '- Quem aprova o animatic: a agência ou direto a incorporadora?'
+  ].join('\n');
+  const segmentos = [
+    [4, 'outros', 'Vamos começar? A ideia hoje é fechar o formato do filme do Mirante para a gente conseguir rodar o animatic ainda este mês.'],
+    [18, 'eu', 'Perfeito. Eu vi o material que vocês mandaram. Antes de falar de cena, queria fechar duração e formato.'],
+    [320, 'outros', 'Sessenta segundos no horizontal. E a incorporadora pediu um corte vertical de quinze para as redes.'],
+    [465, 'eu', 'Então eu começaria pelo parque e pela vida do bairro, e deixaria o prédio para o final, como chegada.'],
+    [690, 'outros', 'A gente prefere sem locução. Texto na tela e uma trilha boa resolvem.'],
+    [820, 'eu', 'As imagens de drone foram feitas ao meio-dia e ficaram duras. Vale regravar no fim da tarde, com o prédio de frente e o parque ao fundo.'],
+    [1120, 'eu', 'Com o que já existe eu monto o animatic em uma semana. Só preciso do roteiro revisado e das imagens de fachada.'],
+    [1450, 'outros', 'Combinado. Roteiro e fachada chegam na semana que vem. E manda três opções de trilha para a gente escolher.']
+  ].map(([t, quem, texto]) => ({ t, quem, texto }));
+  return (exemplo.d = { id: EX, exemplo: true, titulo: 'Filme de lançamento do Mirante', inicio: quando.toISOString(), duracaoSeg: 1920, status: 'pronta', temMinuta: true, resumo, participantes: ['Você', 'Marina Lopes', 'Pedro Antunes'], minuta, segmentos, audio: null, ondas: [], projeto: '', tarefas: [4, 5], erro: '' });
+}
+
 // ---------- barra de cima ----------
 function desenharTopo() {
   const foco = document.activeElement && document.activeElement.id === 'q';
-  const pronta = S.sel && S.det && S.det.status !== 'transcrevendo' && S.det.status !== 'erro';
+  const pronta = S.sel && S.sel !== EX && S.det && S.det.status !== 'transcrevendo' && S.det.status !== 'erro';
   const noProj = !S.sel && S.proj && projeto(S.proj);
   $('#top').innerHTML = (S.sel || noProj ? '<button class="back" id="voltar" title="' + (S.sel && S.proj ? 'Voltar ao projeto' : 'Todas as notas') + '">' + ICO.volta + '</button>' : '<div class="brand">Goat Meet</div>')
-    + '<div class="search">' + ICO.lupa + '<input id="q" placeholder="Buscar" spellcheck="false" value="' + esc(S.q) + '"></div><span class="sp"></span>'
+    + '<div class="search">' + ICO.lupa + '<input id="q" placeholder="Buscar" spellcheck="false" value="' + esc(S.q) + '"></div>' + (!nativo && !S.sel && !S.proj ? '<button class="btn" id="verSetup">Ver primeira abertura</button>' : '') + '<span class="sp"></span>'
     + (pronta && S.editar ? '<button class="btn" id="cancelarEd">Cancelar</button><button class="btn pri" id="concluirEd">Concluir edição</button>' : pronta ? '<button class="btn pri" data-claude="' + (S.det.minuta ? 'livre' : 'resumo') + '">Enviar pro Claude</button>' : noProj ? '<button class="btn pri" data-claude-proj>Enviar projeto pro Claude</button>' : '');
   $('#fab').innerHTML = '<button class="recbtn' + (S.gravando ? ' on' : '') + '" id="rec" title="' + (S.gravando ? 'Parar e transcrever' : 'Gravar reunião') + '"' + (S.ocupado ? ' disabled' : '') + '>'
     + (S.gravando ? '<i></i>' : ICO.mic) + '</button>';
@@ -615,9 +706,9 @@ function cartao(r, n, anima, semProjeto) {
     + '<h3>' + esc(r.titulo) + '</h3>'
     + (pessoas(r.participantes) || '<div class="people none">' + (r.status === 'transcrevendo' ? 'Nova gravação' : 'Você e a chamada') + '</div>')
     + sum
-    + '<div class="foot">' + (p ? '<button class="ptag" data-proj="' + esc(p.id) + '" title="Abrir o projeto"><span>' + esc(p.nome) + '</span></button>' : '')
+    + '<div class="foot">' + (r.exemplo ? '<span class="ptag ex"><span>Exemplo</span></span>' : '') + (p ? '<button class="ptag" data-proj="' + esc(p.id) + '" title="Abrir o projeto"><span>' + esc(p.nome) + '</span></button>' : '')
     + (t[0] ? '<span class="meta" title="Tarefas abertas">' + t[0] + ' a fazer</span>' : '')
-    + '<span class="sp"></span><button class="bin" data-bin title="Apagar">' + ICO.lixo + '</button></div></article>';
+    + '<span class="sp"></span>' + (r.exemplo ? '' : '<button class="bin" data-bin title="Apagar">' + ICO.lixo + '</button>') + '</div></article>';
 }
 function desenharCatalogo() {
   const q = S.q.trim().toLowerCase();
@@ -634,6 +725,7 @@ function desenharCatalogo() {
   const anima = S.animar !== false; S.animar = false;
   itens.forEach((r, n) => { h += cartao(r, n, anima); });
   h += '</div>';
+  if (S.lista.length === 1 && S.lista[0].exemplo) h += '<p class="exhint">Para gravar, clique no botão vermelho antes de entrar na chamada. O cartão acima é um exemplo e some quando você gravar a primeira reunião.</p>';
   $('#wrap').innerHTML = h;
 }
 
@@ -675,8 +767,8 @@ function desenharReuniao() {
     corpo = '<div class="empty in"><h3>A transcrição falhou</h3>' + esc(d.erro || 'Erro desconhecido.') + '<div class="hint">O áudio foi preservado.</div><button class="btn" id="retranscrever">Tentar de novo</button></div>';
   } else if (S.aba === 'minuta') {
     corpo = temResumo
-      ? '<div class="pane md' + (S.editar ? ' edit' : '') + '" id="md">' + comFicha(d) + '</div>'
-        + (S.editar ? '' : '<div class="ask"><h4>Continuar com o Claude</h4><p>Abre o Claude com o pedido já escrito sobre esta reunião. Você só confirma o envio.</p><div class="row">'
+      ? '<div class="pane md' + (S.editar ? ' edit' : '') + '" id="md">' + markdown(d.minuta) + '</div>'
+        + (S.editar || d.exemplo ? '' : '<div class="ask"><h4>Continuar com o Claude</h4><p>Abre o Claude com o pedido já escrito sobre esta reunião. Você só confirma o envio.</p><div class="row">'
         + PEDIDOS.map((x, i) => '<button class="btn' + (i === 0 ? ' pri' : '') + '" data-claude="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>')
       : '<div class="empty in"><h3>Ainda sem resumo</h3>O Claude lê a transcrição e escreve o resumo, os temas, as decisões e as pendências. Ele aparece aqui sozinho.'
         + '<br><button class="btn pri" data-claude="resumo">Enviar pro Claude</button><div class="hint">Abre o Claude com o pedido pronto. É só enviar.</div></div>';
@@ -685,13 +777,14 @@ function desenharReuniao() {
   }
   $('#wrap').innerHTML = '<section class="sheet">'
     + '<span class="meta">' + esc(dataLonga(dt)) + ' · ' + duracao(d.duracaoSeg) + '</span>'
-    + '<div class="title" id="titulo" contenteditable="true" spellcheck="false">' + esc(d.titulo) + '</div>'
+    + '<div class="title" id="titulo"' + (d.exemplo ? '' : ' contenteditable="true"') + ' spellcheck="false">' + esc(d.titulo) + '</div>'
     + pessoas(d.participantes)
     + agendaHtml(d)
+    + (d.projeto && projeto(d.projeto) ? '<div class="projline"><button class="ptag" data-proj="' + esc(d.projeto) + '" title="Abrir o projeto"><span>' + esc(projeto(d.projeto).nome) + '</span></button></div>' : '')
     + '<div class="tabs"><button class="btn' + (S.aba === 'minuta' ? ' pri' : '') + '" data-aba="minuta">Resumo</button>'
     + '<button class="btn' + (S.aba === 'transcricao' ? ' pri' : '') + '" data-aba="transcricao">Transcrição</button>'
     + '<span class="sp"></span>'
-    + (S.editar ? '<span class="meta">Editando. Clique em qualquer linha para mudar o texto.</span></div>'
+    + (d.exemplo ? '<span class="meta">Exemplo. Some quando você gravar a primeira reunião.</span></div>' : S.editar ? '<span class="meta">Editando. Clique em qualquer linha para mudar o texto.</span></div>'
       : (temResumo ? '<button class="quiet" id="copiarMinuta">Copiar resumo</button>' : '') + '<button class="quiet danger" id="apagar">Apagar</button>'
         + (temResumo && S.aba === 'minuta' ? '<button class="btn" id="editarResumo">Editar</button>' : '') + '</div>')
     + corpo + '</section>';
@@ -874,11 +967,6 @@ function fichaDe(src) {
   for (let i = s[0] + 1; i < s[1]; i++) { const m = L[i].match(/^\s*[-*]\s+\*\*([^:*]+):?\*\*:?\s*(.*)$/); if (m) f[m[1].trim()] = m[2].trim(); }
   return f;
 }
-function gravarFicha(src, f) {
-  const L = String(src).split('\n'), s = secaoProjeto(L);
-  if (s) L.splice(s[0] + 1, s[1] - s[0] - 1, ...Object.keys(f).map((k) => '- **' + k + ':** ' + f[k]));
-  return L.join('\n');
-}
 function fichaHtml(f, p, naReuniao) {
   const chaves = CAMPOS.concat(Object.keys(f).filter((k) => !CAMPOS.includes(k)));
   return '<div class="fbox"' + (p ? ' data-proj-ficha="' + esc(p.id) + '"' : '') + '><div class="fhead"><span>Ficha do projeto</span><span class="sp"></span>'
@@ -886,25 +974,17 @@ function fichaHtml(f, p, naReuniao) {
     + '</div><div class="ficha">' + chaves.map((k) => '<label class="fc"><span class="fl">' + esc(k) + '</span><span class="fv" contenteditable="true" spellcheck="false" data-campo="' + esc(k) + '">'
       + esc(String(f[k] || '').replace(/\{\?([^}]+)\}/g, '$1')) + '</span></label>').join('') + '</div></div>';
 }
-function comFicha(d) {
-  const p = d.projeto && projeto(d.projeto), f = p ? p.ficha : fichaDe(d.minuta), md = markdown(d.minuta);
-  if (!f) return md;
-  const bloco = fichaHtml(f, p, true);
-  return md.includes('</blockquote>') ? md.replace('</blockquote>', '</blockquote>' + bloco) : bloco + md;
-}
 function salvarCampo(el) {
   const campo = el.dataset.campo, v = el.textContent.replace(/\s+/g, ' ').trim(), pid = el.closest('.fbox').dataset.projFicha;
   if (!v) el.textContent = '';
   if (pid) {
     const p = projeto(pid); if (!p || (p.ficha[campo] || '') === v) return;
     p.ficha[campo] = v; chamar('salvarProjeto', { id: pid, ficha: p.ficha });
-  } else if (S.det) {
-    const f = fichaDe(S.det.minuta) || {}; if ((f[campo] || '') === v) return;
-    f[campo] = v; S.det.minuta = gravarFicha(S.det.minuta, f); chamar('salvarResumo', { id: S.det.id, texto: S.det.minuta });
   }
 }
 async function abrirProjeto(id) {
   if (!projeto(id)) return;
+  fimEdicao(true);
   S.marc = new Set(); S.armado = false; S.proj = id; S.sel = null; S.det = null; S.projDet = {};
   await Promise.all(S.lista.filter((r) => r.projeto === id && r.temMinuta).map(async (r) => { S.projDet[r.id] = await chamar('abrir', { id: r.id }); }));
   S.animar = true; desenhar(); desenharDoca(); $('#view').scrollTop = 0;
@@ -1023,8 +1103,66 @@ async function acaoMenu(a, pid) {
   aviso(a === 'tirar' ? 'Fora do projeto.' : (ids.length === 1 ? 'Reunião' : ids.length + ' reuniões') + ' no projeto "' + nome + '".');
 }
 
+// ---------- preparação: a primeira vez que o app abre ----------
+const PERMS = [['mic', 'Microfone', 'Para gravar a sua voz.'], ['tela', 'Gravação de tela e áudio', 'Para gravar o som da chamada. A imagem da tela não é guardada.'], ['agenda', 'Agenda', 'Para registrar as reuniões e avisar antes. Opcional.']];
+async function abrirSetup() {
+  const e = await chamar('setup') || {};
+  S.setup = { passo: 0, visto: -1, nome: e.nome || '', perm: Object.assign({ mic: false, tela: false, agenda: false }, e.perm), pasta: e.pasta || CFG.pasta.caminho, modelo: e.modelo ? 1 : 0, baixando: false };
+  desenharSetup();
+}
+function desenharSetup() {
+  const el = $('#setup'), u = S.setup;
+  if (!u) { el.hidden = true; el.innerHTML = ''; return; }
+  const p = u.passo, pronto = u.modelo >= 1;
+  let titulo, lead, corpo, pode = true, acao = 'Continuar';
+  if (p === 0) {
+    titulo = 'Como você se chama?'; lead = 'Seu nome aparece nas tarefas do resumo.'; pode = !!u.nome.trim();
+    corpo = '<input class="su-in" id="suNome" placeholder="Seu nome" spellcheck="false" value="' + esc(u.nome) + '">';
+  } else if (p === 1) {
+    titulo = 'Libere o que o app precisa'; lead = 'O Mac pergunta uma vez.<br>O Goat Meet só grava quando você manda.'; pode = u.perm.mic && u.perm.tela;
+    corpo = '<div class="su-rows">' + PERMS.map((x) => '<div class="su-row"><div><b>' + x[1] + '</b><span>' + x[2] + '</span></div>'
+      + (u.perm[x[0]] ? '<span class="su-ok">Liberado<i></i></span>' : '<button class="btn" data-su="perm" data-q="' + x[0] + '">Liberar</button>') + '</div>').join('') + '</div>'
+      + '<p class="su-note">Se o Mac abrir os Ajustes, ligue o Goat Meet na lista e volte para cá.</p>';
+  } else if (p === 2) {
+    titulo = 'Onde guardar as gravações?'; lead = 'Cada reunião vira uma pasta com o áudio, a transcrição e o resumo.';
+    corpo = '<div class="su-rows"><div class="su-row su-path"><div><code>' + esc(u.pasta) + '</code></div><button class="btn" data-su="pasta">Escolher pasta</button></div></div>';
+  } else {
+    titulo = 'Transcrição no seu Mac'; lead = 'O áudio não sai do computador. Para isso o Goat Meet baixa um modelo de 1,6 GB, uma vez só.'; pode = pronto; acao = 'Começar a usar';
+    corpo = '<div class="su-rows"><div class="su-row"><div><b>Modelo de transcrição</b><span>' + (pronto ? 'Instalado.' : u.baixando ? 'Baixando. Pode deixar a janela aberta.' : '1,6 GB. Leva alguns minutos.') + '</span></div>'
+      + (pronto ? '<span class="su-ok">Pronto<i></i></span>' : u.baixando ? '' : '<button class="btn" data-su="baixar">Baixar</button>') + '</div></div>'
+      + (u.baixando && !pronto ? '<div class="su-body"><div class="su-bar"><i id="suBarra" style="width:' + Math.round(u.modelo * 100) + '%"></i></div><div class="su-prog"><span id="suGb">' + (u.modelo * 1.6).toFixed(1).replace('.', ',') + ' de 1,6 GB</span><span id="suPct">' + Math.round(u.modelo * 100) + '%</span></div></div>' : '');
+  }
+  const foco = document.activeElement && document.activeElement.id === 'suNome';
+  el.hidden = false;
+  el.innerHTML = '<div class="su' + (u.visto !== p ? ' entra' : '') + '"><div class="su-steps">' + [0, 1, 2, 3].map((i) => '<i' + (i <= p ? ' class="on"' : '') + '></i>').join('') + '</div>'
+    + '<span class="meta">' + (p + 1) + ' de 4</span><h1>' + titulo + '</h1><p class="lead">' + lead + '</p><div class="su-body">' + corpo + '</div>'
+    + '<div class="su-foot">' + (p ? '<button class="btn" data-su="ant">Voltar</button>' : '') + '<span class="sp"></span><button class="btn pri" data-su="prox"' + (pode ? '' : ' disabled') + '>' + acao + '</button></div></div>';
+  const novo = u.visto !== p; u.visto = p;
+  if (p === 0 && (novo || foco)) { const i = $('#suNome'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+}
+async function acaoSetup(a, q) {
+  const u = S.setup; if (!u) return;
+  if (a === 'ant') u.passo = Math.max(0, u.passo - 1);
+  if (a === 'prox') {
+    if (u.passo < 3) u.passo++;
+    else { CFG.nome = u.nome.trim(); CFG.pasta.caminho = u.pasta; await chamar('concluirSetup', { nome: CFG.nome }); S.setup = null; desenharSetup(); await carregarConfig(); await carregarLista(true); return aviso('Tudo pronto. É só gravar.'); }
+  }
+  if (a === 'perm') { const r = await chamar('pedirPermissao', { qual: q }); if (r && r.ok) u.perm[q] = true; }
+  if (a === 'pasta') { const r = await chamar('escolherPasta', { levar: false }); if (r && r.erro) return aviso(r.erro); if (r && r.caminho) u.pasta = r.caminho; }
+  if (a === 'baixar') { u.baixando = true; chamar('baixarModelo'); }
+  desenharSetup();
+}
+function progressoDoModelo(e) {
+  const u = S.setup; if (!u) return;
+  u.modelo = e.pronto ? 1 : Math.min(.999, e.p || 0); u.baixando = !e.pronto;
+  if (e.erro) { u.baixando = false; u.modelo = 0; aviso(e.erro); return desenharSetup(); }
+  const b = $('#suBarra');
+  if (e.pronto || !b) return desenharSetup();
+  b.style.width = (u.modelo * 100).toFixed(1) + '%'; $('#suGb').textContent = (u.modelo * 1.6).toFixed(1).replace('.', ',') + ' de 1,6 GB'; $('#suPct').textContent = Math.round(u.modelo * 100) + '%';
+}
+
 // ---------- configurações ----------
-const CFG = { tela: 'inicio', perm: { mic: true, sistema: true }, agenda: { auto: true, ligar: true, ok: true, conta: 'Google Agenda' }, avisos: { mac: true, opcoes: [30, 15, 5], antes: [30, 15, 5], novo: false }, pasta: { caminho: '~/Goat Meet/Meet', real: '~/Goat Meet/Meet', ok: true, levar: true }, geral: { login: true }, nome: 'Braz', termos: ['Cinema 4D', 'Redshift', 'After Effects', 'animatic', 'monstro', 'pilotis', 'Andorra', 'Senna Tower'], claude: { app: true, pasta: true, skill: true } };
+const CFG = { tela: 'inicio', perm: { mic: true, sistema: true }, agenda: { auto: true, ligar: true, ok: true, conta: 'Google Agenda' }, avisos: { mac: true, opcoes: [30, 15, 5], antes: [30, 15, 5], novo: false }, pasta: { caminho: '~/Goat Meet/Meet', real: '~/Goat Meet/Meet', ok: true, levar: true }, geral: { login: true }, nome: 'Braz', termos: ['Cinema 4D', 'Redshift', 'After Effects', 'animatic', 'monstro', 'pilotis', 'Mirante', 'Senna Tower'], claude: { app: true, pasta: true, skill: true } };
 async function carregarConfig() {
   if (!nativo) return;
   const c = await chamar('config');
@@ -1147,7 +1285,8 @@ function desenhar() { if (!S.sel) S.editar = false; desenharTopo(); if (S.sel) d
 function igual(v) { return JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)) ? Object.keys(x).sort().reduce((o, c) => { o[c] = x[c]; return o; }, {}) : x); }
 let assinaturaLista = '';
 async function carregarLista(forcar) {
-  const l = await chamar('listar') || [], p = await chamar('projetos') || [];
+  let l = await chamar('listar') || []; const p = await chamar('projetos') || [];
+  if (!l.length && CFG.pasta.ok) { const e = exemplo(); l = [{ id: e.id, titulo: e.titulo, inicio: e.inicio, duracaoSeg: e.duracaoSeg, status: e.status, temMinuta: true, resumo: e.resumo, participantes: e.participantes, projeto: '', tarefas: e.tarefas, exemplo: true }]; }
   const a = igual([l, p]);
   if (a === assinaturaLista && !forcar) return;
   if (!forcar && (editando() || S.menu)) return;
@@ -1168,12 +1307,12 @@ function editando() { const e = document.activeElement; return S.editar || !!e &
 
 async function abrir(id, aba, semRolar) {
   if (S.editar && S.det && S.det.id !== id) fimEdicao(true);
-  const d = await chamar('abrir', { id });
+  const d = id === EX ? exemplo() : await chamar('abrir', { id });
   if (!d || !d.id) return;
   S.sel = id; S.det = d;
   S.aba = aba || (d.minuta ? 'minuta' : 'transcricao');
   const pronta = d.status !== 'transcrevendo' && d.status !== 'erro';
-  if (!S.gravando && pronta && (d.audio || !nativo) && (!S.som || S.som.id !== id)) {
+  if (!S.gravando && pronta && id !== EX && (d.audio || !nativo) && (!S.som || S.som.id !== id)) {
     audio.pause();
     S.som = { id, titulo: d.titulo, dur: d.duracaoSeg, ondas: d.ondas || [] };
     if (d.audio) audio.src = nativo ? id : d.audio; else audio.removeAttribute('src');
@@ -1204,6 +1343,7 @@ function pedidoClaude(tipo, titulo, id) {
   return 'Faz o resumo' + onde;
 }
 async function enviarClaude(id, tipo) {
+  if (id === EX) return aviso('Este é só um exemplo.');
   const r = S.det && S.det.id === id ? S.det : S.lista.find((x) => x.id === id);
   if (!r) return;
   const texto = pedidoClaude(tipo || (r.temMinuta || r.minuta ? 'livre' : 'resumo'), r.titulo, id);
@@ -1241,6 +1381,7 @@ function desenharDoca() {
   progresso();
 }
 async function ouvir(id, t) {
+  if (id === EX) return aviso('O exemplo não tem áudio.');
   const d = S.det && S.det.id === id ? S.det : await chamar('abrir', { id });
   if (!d || !d.id) return;
   if (!d.audio && nativo) return aviso('Essa reunião não tem áudio.');
@@ -1320,6 +1461,8 @@ window.goatEvento = function (e) {
   else if (e.tipo === 'prox') { clearTimeout(proxT); S.prox = e.titulo ? { titulo: e.titulo, inicio: e.inicio, oculto: true } : null; desenharProx(); }
   else if (e.tipo === 'config') carregarConfig().then(() => { if (S.pop === 'cfg') desenharConfig(); if (!S.sel) desenharCatalogo(); });
   else if (e.tipo === 'aviso') aviso(e.texto);
+  else if (e.tipo === 'modelo') progressoDoModelo(e);
+  else if (e.tipo === 'setup') abrirSetup();
 };
 
 // ---------- interações ----------
@@ -1331,6 +1474,9 @@ document.addEventListener('mousedown', (ev) => {
 document.addEventListener('click', async (ev) => {
   const t = ev.target, alvo = (s) => t.closest(s);
   let el;
+  if ((el = alvo('[data-su]'))) return acaoSetup(el.dataset.su, el.dataset.q);
+  if (S.setup) return;
+  if (alvo('#verSetup')) return abrirSetup();
   if ((el = alvo('[data-m]'))) return acaoMenu(el.dataset.m, el.dataset.id);
   if (S.menu) { if (!alvo('#menu')) fecharMenu(); return; }
   if (S.marc.size && !S.sel && !alvo('.card, .selbar, .gear, .calbtn, .pop, #fab, .dock, .prox')) limparMarc();
@@ -1400,7 +1546,7 @@ document.addEventListener('click', async (ev) => {
       setTimeout(() => { if (b.isConnected) { b.classList.remove('sure'); b.innerHTML = ICO.lixo; } }, 3000);
       return;
     }
-    if (ev.shiftKey || ev.metaKey) return marcar(id);
+    if ((ev.shiftKey || ev.metaKey) && id !== EX) return marcar(id);
     S.marc = new Set(); S.armado = false;
     return abrir(id);
   }
@@ -1426,7 +1572,7 @@ document.addEventListener('contextmenu', (ev) => {
   ev.preventDefault();
   const c = ev.target.closest('.card');
   if (S.menu) fecharMenu();
-  if (!c || S.sel) return;
+  if (!c || S.sel || c.dataset.id === EX) return;
   const id = c.dataset.id, temp = !S.marc.has(id);
   if (temp) { S.marc = new Set([id]); S.armado = false; redesenharLista(); }
   abrirMenu(ev.clientX, ev.clientY, 'tudo', temp);
@@ -1434,11 +1580,13 @@ document.addEventListener('contextmenu', (ev) => {
 document.addEventListener('input', (ev) => {
   if (ev.target.id === 'q') { fimEdicao(true); S.q = ev.target.value; if (S.sel || S.proj) { S.sel = null; S.det = null; S.proj = null; desenhar(); } else desenharCatalogo(); }
   if (ev.target.id === 'cfgNome') CFG.nome = ev.target.value;
+  if (ev.target.id === 'suNome' && S.setup) { const antes = !!S.setup.nome.trim(); S.setup.nome = ev.target.value; if (antes !== !!S.setup.nome.trim()) desenharSetup(); }
   if (ev.target.id === 'novoTitulo') { S.tituloNovo = ev.target.value; chamar('rascunho', { titulo: S.tituloNovo }); }
 });
 document.addEventListener('keydown', (ev) => {
   const campo = /INPUT/.test(ev.target.tagName) || ev.target.isContentEditable;
   if (ev.target.id === 'novoAviso' && (ev.key === 'Enter' || ev.key === 'Escape')) { const v = Math.round(+ev.target.value), a = CFG.avisos; a.novo = false; if (ev.key === 'Enter' && v >= 1 && v <= 180) { if (!a.opcoes.includes(v)) a.opcoes.push(v); if (!a.antes.includes(v)) a.antes.push(v); guardar('avisos.opcoes', a.opcoes); guardar('avisos.antes', a.antes); } ev.stopPropagation(); return desenharConfig(); }
+  if (S.setup) { if (ev.key === 'Enter' && ev.target.id === 'suNome' && S.setup.nome.trim()) acaoSetup('prox'); return; }
   if (S.editar && ev.target.closest && ev.target.closest('#md.edit .ed')) return teclaEdicao(ev);
   if (ev.target.id === 'nomeProj') { if (ev.key === 'Enter') acaoMenu('criar'); if (ev.key === 'Escape') fecharMenu(); return; }
   if (S.menu) { if (ev.key === 'Escape') fecharMenu(); if (ev.key === 'Backspace' || ev.key === 'Delete') { ev.preventDefault(); acaoMenu('apagar'); } return; }
@@ -1473,6 +1621,7 @@ document.addEventListener('paste', (ev) => { const onde = ev.target.nodeType ===
   const e = await chamar('estado');
   if (e) estado(e);
   await carregarLista(true);
+  if (nativo) { const su = await chamar('setup'); if (su && su.precisa) abrirSetup(); }
   if (!nativo) setTimeout(() => mostrarProx({ titulo: 'Alinhamento semanal', inicio: Date.now() + 5 * 60000 }), 1500);
   setInterval(async () => {
     if (document.hidden) return;
@@ -1486,11 +1635,10 @@ document.addEventListener('paste', (ev) => { const onde = ev.target.nodeType ===
 function simulado(cmd, a) {
   const M = simulado.M || (simulado.M = dadosExemplo());
   const P = simulado.P || (simulado.P = [
-    
     { id: 'p2', nome: 'Campanha de lançamento', ficha: { Cliente: 'Incorporadora, via agência', Entrega: 'Filme de lançamento e peças de apoio', Prazo: 'Versão final na quinta' } }
   ]);
   const tarefas = (r) => { const t = String(r.minuta || '').split('\n').filter((l) => RE_TAREFA.test(l)); return [t.filter((l) => l.match(RE_TAREFA)[1] === ' ').length, t.length]; };
-  if (cmd === 'listar') return M.map((r) => ({ id: r.id, titulo: r.titulo, inicio: r.inicio, duracaoSeg: r.duracaoSeg, status: r.status, temMinuta: !!r.minuta, resumo: r.resumo, participantes: r.participantes, projeto: r.projeto || null, tarefas: tarefas(r) }));
+  if (cmd === 'listar') return M.map((r) => ({ id: r.id, titulo: r.titulo, inicio: r.inicio, duracaoSeg: r.duracaoSeg, status: r.status, temMinuta: !!r.minuta, resumo: r.resumo, participantes: r.participantes, projeto: r.projeto || null, tarefas: tarefas(r), exemplo: !!r.exemplo }));
   if (cmd === 'projetos') return P.filter((p) => M.some((r) => r.projeto === p.id)).map((p) => ({ id: p.id, nome: p.nome, ficha: Object.assign({}, p.ficha) }));
   if (cmd === 'agrupar') {
     let p = P.find((x) => x.id === a.projeto);
@@ -1501,6 +1649,9 @@ function simulado(cmd, a) {
   if (cmd === 'desagrupar') { M.forEach((r) => { if (a.ids.includes(r.id)) r.projeto = null; }); return {}; }
   if (cmd === 'salvarProjeto') { const p = P.find((x) => x.id === a.id); if (p) { if (a.nome) p.nome = a.nome; if (a.ficha) p.ficha = a.ficha; } return {}; }
   if (cmd === 'apagarProjeto') { M.forEach((r) => { if (r.projeto === a.id) r.projeto = null; }); return {}; }
+  if (cmd === 'setup') return { precisa: true, nome: '', perm: { mic: false, tela: false, agenda: false }, pasta: '~/Goat Meet/Meet', modelo: false };
+  if (cmd === 'pedirPermissao') return new Promise((ok) => setTimeout(() => ok({ ok: true }), 500));
+  if (cmd === 'baixarModelo') { let v = 0; clearInterval(simulado.d); simulado.d = setInterval(() => { v += .012 + Math.random() * .02; if (v >= 1) clearInterval(simulado.d); window.goatEvento({ tipo: 'modelo', p: v, pronto: v >= 1 }); }, 160); return {}; }
   if (cmd === 'abrir') return M.find((r) => r.id === a.id) || null;
   if (cmd === 'salvarResumo') { const r = M.find((x) => x.id === a.id); if (r) { r.minuta = a.texto; const m = a.texto.match(/^>\s?(.*)$/m); if (m) r.resumo = m[1].replace(/\{\?([^}]+)\}/g, '$1'); } return {}; }
   if (cmd === 'escolherPasta') return { caminho: CFG.pasta.caminho.includes('Documents') ? '~/Goat Meet/Meet' : '~/Documents/Trabalho/Meet' };
@@ -1509,7 +1660,6 @@ function simulado(cmd, a) {
     const de = (id) => { const r = M.find((x) => x.id === id); return r ? { inicio: r.inicio, fim: new Date(new Date(r.inicio).getTime() + r.duracaoSeg * 1000).toISOString() } : null; };
     const am = (h, m) => { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(h, m, 0, 0); return d.toISOString(); };
     return [
-      
       de('a') && Object.assign({ titulo: 'Ajustes do filme', reuniaoId: 'a' }, de('a')),
       { titulo: 'Alinhamento semanal', inicio: em(5), fim: em(35) },
       { titulo: 'Revisão com o cliente', inicio: em(150), fim: em(195) },
@@ -1578,14 +1728,6 @@ function dadosExemplo() {
   const orc = [
     '# Orçamento das animações de painel',
     '> Proposta por projeto, com duas rodadas de ajuste incluídas. Prazo de 15 dias a partir da aprovação do storyboard.',
-    '## Projeto',
-    '- **Cliente:** Rui Prado',
-    '- **Construtora:** ',
-    '- **Local:** ',
-    '- **Entrega:** Animações de painel',
-    '- **Valor:** ',
-    '- **Pagamento:** ',
-    '- **Prazo:** 15 dias depois do storyboard aprovado',
     '## Tarefas',
     '- [ ] **Braz** — mandar a proposta por escrito',
     '## Em aberto',
@@ -1593,7 +1735,7 @@ function dadosExemplo() {
   ].join('\n');
   const base = { segmentos: seg, audio: null, ondas };
   return [
-    
+    exemplo(),
     Object.assign({ id: 'a', titulo: 'Ajustes do filme', inicio: h(0, 10, 40), duracaoSeg: 2280, agenda: { tipo: 'criado' }, status: 'pronta', resumo: 'Alinhamento da versão 3 do filme. Três ajustes definidos (cor da fachada, trilha e ordem de dois takes) e versão final na quinta, se a trilha chegar até terça.', participantes: ['Braz', 'Marina Lopes'], minuta, projeto: 'p2' }, base),
     Object.assign({ id: 'b', titulo: 'Alinhamento de pauta', inicio: h(0, 9, 5), duracaoSeg: 940, agenda: { tipo: 'criado' }, status: 'pronta', resumo: '', participantes: [], minuta: null }, base),
     Object.assign({ id: 'c', titulo: 'Reunião 26/11 16:00', inicio: h(1, 16, 0), duracaoSeg: 3120, agenda: { tipo: 'criado' }, status: 'transcrevendo', resumo: '', participantes: [], minuta: null }, base, { segmentos: [] }),
