@@ -1,19 +1,93 @@
-# Confere, a cada mudança, se o Goat Meet monta em um Mac limpo.
-name: Montar
+# Monta o Goat Meet em um Mac do GitHub a cada mudança.
+# Quando a versão do Info.plist ainda não foi publicada e a assinatura fixa existe, publica o instalador.
+name: Montar e publicar
 on:
   push:
     branches: [main]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   montar:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Ler a versão
+        id: v
+        run: echo "v=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' _app/Info.plist)" >> "$GITHUB_OUTPUT"
+
+      - name: Programa de transcrição (guardado de uma montagem para a outra)
+        id: motor
+        uses: actions/cache@v4
+        with:
+          path: whisper-cli
+          key: whisper-cli-v1.7.6-${{ runner.arch }}-1
+
+      - name: Montar o programa de transcrição
+        if: steps.motor.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch v1.7.6 https://github.com/ggml-org/whisper.cpp w
+          cmake -S w -B w/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DGGML_METAL_EMBED_LIBRARY=ON \
+            -DWHISPER_BUILD_TESTS=OFF -DWHISPER_BUILD_SERVER=OFF -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0
+          cmake --build w/build -j 4 --config Release --target whisper-cli
+          cp w/build/bin/whisper-cli whisper-cli
+
+      - name: Conferir o programa de transcrição
+        run: |
+          ./whisper-cli --help > /dev/null 2>&1 || ./whisper-cli -h > /dev/null 2>&1
+          if otool -L whisper-cli | grep -v "^whisper-cli" | grep -v -E "/usr/lib/|/System/Library/"; then echo "depende de biblioteca de fora"; exit 1; fi
+
+      - name: Preparar a assinatura fixa
+        env:
+          P12: ${{ secrets.ASSINATURA_P12 }}
+        run: |
+          if [ -z "$P12" ]; then echo "Sem a chave de assinatura: monta, mas não publica."; exit 0; fi
+          KC="$RUNNER_TEMP/goat.keychain-db"
+          echo "$P12" | base64 --decode > "$RUNNER_TEMP/a.p12"
+          security create-keychain -p goatmeet "$KC"
+          security set-keychain-settings -lut 3600 "$KC"
+          security unlock-keychain -p goatmeet "$KC"
+          security import "$RUNNER_TEMP/a.p12" -k "$KC" -P goatmeet -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k goatmeet "$KC" > /dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/a.p12"
+          echo "GOAT_ASSINATURA=Goat Meet Assinatura" >> "$GITHUB_ENV"
+
       - name: Montar o app
-        run: bash _app/build.sh --verificar
+        run: GOAT_WHISPER="$PWD/whisper-cli" bash _app/build.sh --verificar
+
+      - name: Conferir o app
+        run: |
+          APP="_app/build/Goat Meet.app"
+          test -f "$APP/Contents/Resources/ui/index.html"
+          test -f "$APP/Contents/Resources/guia.md"
+          test -x "$APP/Contents/MacOS/whisper-cli"
+          codesign --verify --strict "$APP"
+          codesign -d -r- "$APP" 2>&1 | tee requisito.txt
+          if [ -n "${GOAT_ASSINATURA:-}" ]; then grep -q "certificate leaf" requisito.txt; fi
+
       - name: Empacotar
-        run: ditto -c -k --keepParent "_app/build/Goat Meet.app" GoatMeet.zip
+        run: |
+          ditto -c -k --keepParent "_app/build/Goat Meet.app" GoatMeet.zip
+          mkdir dmg
+          cp -R "_app/build/Goat Meet.app" dmg/
+          ln -s /Applications dmg/Applications
+          hdiutil create -volname "Goat Meet" -srcfolder dmg -ov -format UDZO GoatMeet.dmg
+
       - uses: actions/upload-artifact@v4
         with:
           name: GoatMeet
-          path: GoatMeet.zip
+          path: |
+            GoatMeet.dmg
+            GoatMeet.zip
+
+      - name: Publicar a versão nova
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="v${{ steps.v.outputs.v }}"
+          if [ -z "${GOAT_ASSINATURA:-}" ]; then echo "Sem assinatura fixa: não publica."; exit 0; fi
+          if gh release view "$V" > /dev/null 2>&1; then echo "$V já está publicada."; exit 0; fi
+          gh release create "$V" GoatMeet.dmg GoatMeet.zip --title "Goat Meet ${{ steps.v.outputs.v }}" \
+            --notes "Para instalar: baixe o GoatMeet.dmg, abra e arraste o Goat Meet para Aplicativos. Quem já tem o app instalado recebe esta versão sozinho."

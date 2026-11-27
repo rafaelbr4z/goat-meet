@@ -22,7 +22,17 @@ let home = FileManager.default.homeDirectoryForCurrentUser
 let baseDir = home.appendingPathComponent("Goat Meet", isDirectory: true)
 let appDir = baseDir.appendingPathComponent("_app", isDirectory: true)
 let tmpDir = appDir.appendingPathComponent("tmp", isDirectory: true)
-let uiURL = appDir.appendingPathComponent("ui/index.html")
+/// A tela vem de dentro do app. A pasta `_app/ui` só vale quando existe o arquivo `usar-esta` nela (para testar uma tela nova).
+let uiURL: URL = {
+    let daPasta = appDir.appendingPathComponent("ui/index.html")
+    let fm = FileManager.default
+    if fm.fileExists(atPath: appDir.appendingPathComponent("ui/usar-esta").path), fm.fileExists(atPath: daPasta.path) { return daPasta }
+    if let r = Bundle.main.resourceURL {
+        let doApp = r.appendingPathComponent("ui/index.html")
+        if fm.fileExists(atPath: doApp.path) { return doApp }
+    }
+    return daPasta
+}()
 let modelURL = appDir.appendingPathComponent("models/ggml-large-v3-turbo.bin")
 let vocabularioURL = appDir.appendingPathComponent("vocabulario.txt")
 let logURL = appDir.appendingPathComponent("goatmeet.log")
@@ -53,8 +63,13 @@ func gmLog(_ text: String) {
 func hostSecondsNow() -> Double { AVAudioTime.seconds(forHostTime: mach_absolute_time()) }
 
 func whisperPath() -> String? {
-    ["/opt/homebrew/bin/whisper-cli", "/usr/local/bin/whisper-cli"]
-        .first { FileManager.default.isExecutableFile(atPath: $0) }
+    var lugares: [String] = []
+    if let e = Bundle.main.executableURL {
+        lugares.append(e.deletingLastPathComponent().appendingPathComponent("whisper-cli").path)
+    }
+    lugares.append("/opt/homebrew/bin/whisper-cli")
+    lugares.append("/usr/local/bin/whisper-cli")
+    return lugares.first { FileManager.default.isExecutableFile(atPath: $0) }
 }
 
 func formatted(_ d: Date, _ pattern: String) -> String {
@@ -588,7 +603,7 @@ func transcrever(wav: URL, quem: String) throws -> [Trecho] {
         throw GMError("O programa de transcrição (whisper-cli) não foi encontrado. Rode o \"Instalar Goat Meet\" de novo.")
     }
     guard FileManager.default.fileExists(atPath: modelURL.path) else {
-        throw GMError("O modelo de transcrição não foi encontrado. Rode o \"Instalar Goat Meet\" de novo.")
+        throw GMError("O modelo de transcrição ainda não foi baixado. Feche e abra o Goat Meet para baixar.")
     }
     let base = wav.deletingPathExtension()
     var prompt = "Reunião de trabalho em português do Brasil."
@@ -819,9 +834,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
         ronda = Timer.scheduledTimer(withTimeInterval: 20, repeats: true) { _ in self.rondar() }
         fila.async { self.preencherOndas() }
 
-        if whisperPath() == nil || !FileManager.default.fileExists(atPath: modelURL.path) {
-            alerta("Falta instalar a transcrição", "Abra a pasta Goat Meet e rode o \"Instalar Goat Meet\".")
+        if whisperPath() == nil {
+            alerta("Falta o programa de transcrição", "Instale o Goat Meet de novo pela página do GitHub.")
         }
+
+        _ = appAbertoEm
+        Atualizador.shared.avisar = { versao in
+            var e = [String: Any]()
+            e["tipo"] = "atualizacao"
+            e["versao"] = versao
+            self.emitir(e)
+            // Atualização que chega logo depois de abrir o app entra sozinha, se nada estiver gravando.
+            if Date().timeIntervalSince(appAbertoEm) < 120 && self.recorder == nil && !self.iniciando && self.pendentes == 0 {
+                Atualizador.shared.aplicar()
+            }
+        }
+        Atualizador.shared.verificar()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -1149,6 +1177,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
                 r["ok"] = true
             }
             responder(n, r)
+        case "setup":
+            responder(n, estadoDoSetup())
+        case "pedirPermissao":
+            pedirPermissao((b["qual"] as? String) ?? "") { ok in
+                var r = [String: Any]()
+                r["ok"] = ok
+                self.responder(n, r)
+            }
+        case "baixarModelo":
+            Modelo.shared.baixar { evento in self.emitir(evento) }
+            responder(n, vazio)
+        case "concluirSetup":
+            let nomeDado = ((b["nome"] as? String) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !nomeDado.isEmpty { cfgDefinir("nome", nomeDado) }
+            responder(n, vazio)
+        case "atualizar":
+            if recorder != nil || iniciando || pendentes > 0 {
+                var r = [String: Any]()
+                r["erro"] = "Termine a gravação e a transcrição antes de atualizar."
+                responder(n, r)
+            } else {
+                responder(n, vazio)
+                Atualizador.shared.aplicar()
+            }
         case "projetos":
             responder(n, projetosParaInterface())
         case "agrupar":
@@ -1327,6 +1379,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
     func rondar() {
         rodadas += 1
         verificarAvisos()
+        if rodadas % 540 == 0 { Atualizador.shared.verificar() }
         if rodadas % 3 == 0 {
             sincronizarAgenda()
             if recorder == nil && !iniciando && pendentes == 0 && pastaDisponivel() { recuperarPendentes() }

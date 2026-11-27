@@ -462,7 +462,7 @@ function chamar(cmd, args) {
 }
 
 // ---------- estado ----------
-const S = { lista: [], sel: null, det: null, aba: 'minuta', q: '', gravando: false, inicio: 0, micOk: true, tituloNovo: '', ocupado: false, som: null, prox: null, tituloPend: '', pop: null, agenda: [], proj: null, projetos: [], projDet: {}, marc: new Set(), menu: null, armado: false, editar: false, setup: null };
+const S = { lista: [], sel: null, det: null, aba: 'minuta', q: '', gravando: false, inicio: 0, micOk: true, tituloNovo: '', ocupado: false, som: null, prox: null, tituloPend: '', pop: null, agenda: [], proj: null, projetos: [], projDet: {}, marc: new Set(), menu: null, armado: false, editar: false, setup: null, atualizacao: '' };
 const $ = (s) => document.querySelector(s);
 // No app, quem toca o áudio é o próprio Mac (funciona com a pasta em qualquer disco). Este objeto imita o player da página.
 function somNativo() {
@@ -754,7 +754,7 @@ function desenharTopo() {
   const pronta = S.sel && !ehExemplo(S.sel) && S.det && S.det.status !== 'transcrevendo' && S.det.status !== 'erro';
   const noProj = !S.sel && S.proj && projeto(S.proj);
   $('#top').innerHTML = (S.sel || noProj ? '<button class="back" id="voltar" title="' + (S.sel && S.proj ? 'Voltar ao projeto' : 'Todas as notas') + '">' + ICO.volta + '</button>' : '<div class="brand">Goat Meet</div>')
-    + '<div class="search">' + ICO.lupa + '<input id="q" placeholder="Buscar" spellcheck="false" value="' + esc(S.q) + '"></div>' + (!nativo && !S.sel && !S.proj ? '<button class="btn" id="verSetup">Ver primeira abertura</button>' : '') + '<span class="sp"></span>'
+    + '<div class="search">' + ICO.lupa + '<input id="q" placeholder="Buscar" spellcheck="false" value="' + esc(S.q) + '"></div>' + (!nativo && !S.sel && !S.proj ? '<button class="btn" id="verSetup">Ver primeira abertura</button>' : '') + '<span class="sp"></span>' + (S.atualizacao && !S.sel && !S.proj ? '<button class="btn" id="atualizar" title="Fecha e abre o app na versão nova">Atualizar para a versão ' + esc(S.atualizacao) + '</button>' : '')
     + (pronta && S.editar ? '<button class="btn" id="cancelarEd">Cancelar</button><button class="btn pri" id="concluirEd">Concluir edição</button>' : pronta ? '<button class="btn pri" data-claude="' + (S.det.minuta ? 'livre' : 'resumo') + '">Enviar pro Claude</button>' : noProj ? '<button class="btn pri" data-claude-proj>Enviar projeto pro Claude</button>' : '');
   $('#fab').innerHTML = '<button class="recbtn' + (S.gravando ? ' on' : '') + '" id="rec" title="' + (S.gravando ? 'Parar e transcrever' : 'Gravar reunião') + '"' + (S.ocupado ? ' disabled' : '') + '>'
     + (S.gravando ? '<i></i>' : ICO.mic) + '</button>';
@@ -1182,8 +1182,17 @@ async function acaoMenu(a, pid) {
 const PERMS = [['mic', 'Microfone', 'Para gravar a sua voz.'], ['tela', 'Gravação de tela e áudio', 'Para gravar o som da chamada. A imagem da tela não é guardada.'], ['agenda', 'Agenda', 'Para registrar as reuniões e avisar antes. Opcional.']];
 async function abrirSetup() {
   const e = await chamar('setup') || {};
-  S.setup = { passo: 0, visto: -1, nome: e.nome || '', perm: Object.assign({ mic: false, tela: false, agenda: false }, e.perm), pasta: e.pasta || CFG.pasta.caminho, modelo: e.modelo ? 1 : 0, baixando: false };
+  const perm = Object.assign({ mic: false, tela: false, agenda: false }, e.perm);
+  S.setup = { passo: !e.nome ? 0 : !(perm.mic && perm.tela) ? 1 : !e.modelo ? 3 : 0, visto: -1, nome: e.nome || '', perm, pasta: e.pasta || CFG.pasta.caminho, modelo: e.modelo ? 1 : 0, baixando: !!e.baixando };
+  if (e.baixando) chamar('baixarModelo');
   desenharSetup();
+  clearInterval(abrirSetup.t);
+  abrirSetup.t = setInterval(async () => {
+    const u = S.setup; if (!u) return clearInterval(abrirSetup.t);
+    if (u.passo !== 1 || !nativo) return;
+    const x = await chamar('setup'); if (!x || !x.perm || !S.setup) return;
+    if (['mic', 'tela', 'agenda'].some((k) => !!x.perm[k] !== !!u.perm[k])) { Object.assign(u.perm, x.perm); desenharSetup(); }
+  }, 2000);
 }
 function desenharSetup() {
   const el = $('#setup'), u = S.setup;
@@ -1197,7 +1206,7 @@ function desenharSetup() {
     titulo = 'Libere o que o app precisa'; lead = 'O Mac pergunta uma vez.<br>O Goat Meet só grava quando você manda.'; pode = u.perm.mic && u.perm.tela;
     corpo = '<div class="su-rows">' + PERMS.map((x) => '<div class="su-row"><div><b>' + x[1] + '</b><span>' + x[2] + '</span></div>'
       + (u.perm[x[0]] ? '<span class="su-ok">Liberado<i></i></span>' : '<button class="btn" data-su="perm" data-q="' + x[0] + '">Liberar</button>') + '</div>').join('') + '</div>'
-      + '<p class="su-note">Se o Mac abrir os Ajustes, ligue o Goat Meet na lista e volte para cá.</p>';
+      + '<p class="su-note">Se o Mac abrir os Ajustes, ligue o Goat Meet na lista. Se ele pedir para reabrir o app, pode reabrir: a preparação continua daqui.</p>';
   } else if (p === 2) {
     titulo = 'Onde guardar as gravações?'; lead = 'Cada reunião vira uma pasta com o áudio, a transcrição e o resumo.';
     corpo = '<div class="su-rows"><div class="su-row su-path"><div><code>' + esc(u.pasta) + '</code></div><button class="btn" data-su="pasta">Escolher pasta</button></div></div>';
@@ -1219,6 +1228,7 @@ async function acaoSetup(a, q) {
   const u = S.setup; if (!u) return;
   if (a === 'ant') u.passo = Math.max(0, u.passo - 1);
   if (a === 'prox') {
+    if (u.passo === 0) guardar('nome', u.nome.trim());
     if (u.passo < 3) u.passo++;
     else { CFG.nome = u.nome.trim(); CFG.pasta.caminho = u.pasta; await chamar('concluirSetup', { nome: CFG.nome }); S.setup = null; desenharSetup(); await carregarConfig(); await carregarLista(true); return aviso('Tudo pronto. É só gravar.'); }
   }
@@ -1538,6 +1548,7 @@ window.goatEvento = function (e) {
   else if (e.tipo === 'aviso') aviso(e.texto);
   else if (e.tipo === 'modelo') progressoDoModelo(e);
   else if (e.tipo === 'setup') abrirSetup();
+  else if (e.tipo === 'atualizacao') { S.atualizacao = e.versao || ''; desenharTopo(); }
 };
 
 // ---------- interações ----------
@@ -1552,6 +1563,7 @@ document.addEventListener('click', async (ev) => {
   if ((el = alvo('[data-su]'))) return acaoSetup(el.dataset.su, el.dataset.q);
   if (S.setup) return;
   if (alvo('#verSetup')) return abrirSetup();
+  if (alvo('#atualizar')) { const r = await chamar('atualizar'); if (r && r.erro) aviso(r.erro); else if (!nativo) aviso('No app, isso fecha e abre o Goat Meet na versão nova.'); return; }
   if ((el = alvo('[data-m]'))) return acaoMenu(el.dataset.m, el.dataset.id);
   if (S.menu) { if (!alvo('#menu')) fecharMenu(); return; }
   if (S.marc.size && !S.sel && !alvo('.card, .selbar, .gear, .calbtn, .pop, #fab, .dock, .prox')) limparMarc();
@@ -1696,7 +1708,7 @@ document.addEventListener('paste', (ev) => { const onde = ev.target.nodeType ===
   const e = await chamar('estado');
   if (e) estado(e);
   await carregarLista(true);
-  if (nativo) { const su = await chamar('setup'); if (su && su.precisa) abrirSetup(); }
+  if (nativo) { const su = await chamar('setup'); if (su && su.atualizacao) { S.atualizacao = su.atualizacao; desenharTopo(); } if (su && su.precisa) abrirSetup(); }
   if (!nativo) setTimeout(() => mostrarProx({ titulo: 'Alinhamento semanal', inicio: Date.now() + 5 * 60000 }), 1500);
   setInterval(async () => {
     if (document.hidden) return;

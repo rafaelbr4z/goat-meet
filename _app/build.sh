@@ -16,6 +16,16 @@ swiftc -O -swift-version 5 -target "$ARCH-apple-macos13.0" \
 
 cp "$DIR/Info.plist" "$APP/Contents/Info.plist"
 
+# A tela e o guia do resumo vão dentro do app.
+mkdir -p "$APP/Contents/Resources/ui"
+cp "$DIR/ui/index.html" "$DIR/ui/tokens.css" "$APP/Contents/Resources/ui/"
+cp "$DIR/COMO O CLAUDE FAZ O RESUMO.md" "$APP/Contents/Resources/guia.md"
+
+# O programa de transcrição também, quando a montagem traz um (GOAT_WHISPER).
+if [ -n "${GOAT_WHISPER:-}" ] && [ -x "$GOAT_WHISPER" ]; then
+  cp "$GOAT_WHISPER" "$APP/Contents/MacOS/whisper-cli"
+fi
+
 # Ícone
 if [ -f "$DIR/icone.png" ]; then
   (
@@ -32,6 +42,9 @@ if [ -f "$DIR/icone.png" ]; then
 fi
 
 # Assinatura: com GOAT_ASSINATURA definida usa essa identidade (fixa); sem ela, assinatura local.
+if [ -f "$APP/Contents/MacOS/whisper-cli" ]; then
+  codesign --force --sign "${GOAT_ASSINATURA:--}" --identifier com.braz.goatmeet.whisper "$APP/Contents/MacOS/whisper-cli"
+fi
 codesign --force --sign "${GOAT_ASSINATURA:--}" --identifier com.braz.goatmeet "$APP"
 echo "MONTAGEM_OK"
 

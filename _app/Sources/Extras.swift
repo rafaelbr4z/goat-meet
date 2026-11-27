@@ -8,14 +8,21 @@ import EventKit
 
 let configURL = appDir.appendingPathComponent("config.json")
 let pastaPadrao = baseDir.appendingPathComponent("Reunioes", isDirectory: true)
-let guiaURL = appDir.appendingPathComponent("COMO O CLAUDE FAZ O RESUMO.md")
+/// O guia que o Claude segue vem de dentro do app; na montagem local, da pasta `_app`.
+let guiaURL: URL = {
+    if let r = Bundle.main.resourceURL {
+        let doApp = r.appendingPathComponent("guia.md")
+        if FileManager.default.fileExists(atPath: doApp.path) { return doApp }
+    }
+    return appDir.appendingPathComponent("COMO O CLAUDE FAZ O RESUMO.md")
+}()
 let agenteURL = home.appendingPathComponent("Library/LaunchAgents/com.braz.goatmeet.plist")
 let configLock = NSLock()
 var configCache: [String: Any] = lerConfigDoDisco()
 
 func configPadrao() -> [String: Any] {
     var c = [String: Any]()
-    c["nome"] = "Braz"
+    c["nome"] = ""
     c["pasta"] = pastaPadrao.path
     c["login"] = false
     c["agenda"] = ["auto": true, "ligar": true]
