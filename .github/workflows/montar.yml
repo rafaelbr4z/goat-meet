@@ -1,0 +1,19 @@
+# Confere, a cada mudança, se o Goat Meet monta em um Mac limpo.
+name: Montar
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  montar:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Montar o app
+        run: bash _app/build.sh --verificar
+      - name: Empacotar
+        run: ditto -c -k --keepParent "_app/build/Goat Meet.app" GoatMeet.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GoatMeet
+          path: GoatMeet.zip
