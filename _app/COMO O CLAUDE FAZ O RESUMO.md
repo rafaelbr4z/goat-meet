@@ -31,8 +31,8 @@ Leia `reuniao.json` e `transcricao.md` inteiros. Grave `minuta.md` na pasta da r
 ## Decisões
 - O que ficou decidido
 
-## Conceito do filme
-- A ideia, a ordem das cenas, referências, trilha, locução
+## Conceito
+- A ideia central do trabalho, no nível que a reunião chegou
 
 ## O que foi falado
 
@@ -49,8 +49,9 @@ Regras:
 - O resumo da reunião traz só o que foi dito nela. Dados fixos do trabalho (cliente, valor, prazo) não entram aqui como ficha: eles ficam na ficha do projeto, explicada mais abaixo.
 - O bloco `>` depois do título aparece no cartão da reunião. Sempre inclua. Curto: até 220 caracteres aparecem no cartão.
 - **Tarefas**: cada item começa com `- [ ]`. O app deixa o Braz marcar como feito, e aí vira `- [x]`. Prazo, só quando foi dito, exatamente assim: `(prazo: dd/mm)`. Sem prazo, não escreva nada. Use "Braz" para o que ele assumiu; para os outros, o nome se ele aparece na conversa, senão "Cliente", "Agência" ou "Outros". Tudo que envolve dinheiro e documento vira tarefa: emitir nota fiscal, mandar orçamento, cobrar parcela.
-- **Conceito do filme**: só quando a reunião é sobre um filme ou uma peça. Se não for, deixe a seção de fora.
-- **O que foi falado**: por tema, não em ordem cronológica. Não repita o que já está nas outras seções.
+- **Conceito**: a seção central muda de nome conforme o assunto da reunião. Filme ou vídeo: `Conceito do filme` ou `Conceito do vídeo` (ideia, ordem das cenas, referências, trilha, locução). Campanha: `Conceito da campanha` (ideia central, tom, o que liga as peças). Redes sociais: `Linha editorial` (temas, tom, frequência). Outro assunto: o nome que descrever melhor. Se a reunião não teve uma ideia central (um orçamento, uma cobrança), deixe a seção de fora.
+- **O que foi falado**: os temas também seguem o assunto. Em campanha, por exemplo: público, mídia e verba, cronograma. Em redes sociais: formatos, aprovação, resultados. Em vídeo: material bruto, animação, trilha e som.
+- Em **O que foi falado**, organize por tema, não em ordem cronológica, e não repita o que já está nas outras seções.
 - `[mm:ss]` vira um botão que toca o áudio naquele ponto. Use os horários da transcrição nos pontos importantes.
 - Escreva só o que está na transcrição. Se um nome, valor ou prazo foi deduzido pelo contexto, diga que é dedução.
 - Português do Brasil, texto direto.

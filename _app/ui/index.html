@@ -619,64 +619,139 @@ function markdown(src) {
   return h;
 }
 
-// ---------- reunião de exemplo: aparece enquanto não existe nenhuma gravação ----------
-const EX = '_exemplo';
-function exemplo() {
-  if (exemplo.d) return exemplo.d;
-  const quando = new Date(); quando.setDate(quando.getDate() - 1); quando.setHours(15, 0, 0, 0);
-  const prazo = new Date(); prazo.setDate(prazo.getDate() + 7);
-  const resumo = 'Primeira reunião do filme de lançamento do Residencial Mirante. Ficou fechado um filme de 60 segundos que começa no parque e termina na fachada, com animatic em uma semana. Falta a agência mandar o roteiro e as imagens de fachada.';
-  const minuta = [
-    '# Filme de lançamento do Mirante',
-    '> ' + resumo,
-    '## Tarefas',
-    '- [ ] **Você** — montar o animatic com as imagens que já existem (prazo: ' + pad(prazo.getDate()) + '/' + pad(prazo.getMonth() + 1) + ') [18:40]',
-    '- [ ] **Você** — mandar três opções de trilha para aprovação [24:10]',
-    '- [ ] **Agência** — enviar o roteiro revisado [09:15]',
-    '- [ ] **Agência** — entregar as imagens de fachada e cobertura [14:30]',
-    '- [x] **Agência** — compartilhar a pasta com a identidade visual',
-    '## Decisões',
-    '- O filme tem 60 segundos, em 16:9, com uma versão vertical de 15 segundos [05:20]',
-    '- Começa pelo parque e pela vida do bairro, e só depois mostra o prédio [07:45]',
-    '- Sem locução: texto na tela e trilha [11:30]',
-    '- Duas rodadas de ajuste incluídas; o que passar disso é orçado à parte [27:05]',
-    '## Conceito do filme',
-    '- A ideia é "morar ao lado do parque": o bairro é o personagem, o prédio é a chegada [07:45]',
-    '- Abre com a manhã no parque, gente correndo e o café da esquina',
-    '- Um aéreo liga o parque ao terreno e mostra a distância a pé [12:50]',
-    '- Fecha na fachada ao entardecer, com o nome do empreendimento',
-    '- Referência: o filme enviado pela agência, com cortes rápidos e texto grande na tela [10:05]',
-    '## O que foi falado',
-    '### Imagens de drone',
-    '- As imagens atuais foram feitas ao meio-dia e ficaram duras; vale regravar no fim da tarde [13:40]',
-    '- O drone precisa pegar o prédio de frente, com o parque ao fundo [14:05]',
-    '### Lazer e paisagismo',
-    '- A praça interna e a pista de caminhada ainda estão em projeto; entram como imagem 3D [16:20]',
-    '- O paisagismo do térreo é o ponto forte e merece um take só dele [17:10]',
-    '### Material disponível',
-    '- Prontos: apartamento decorado e áreas comuns [20:15]',
-    '- Faltam fachada e cobertura, previstas para a próxima semana [14:30]',
-    '## Em aberto',
-    '- A versão vertical usa as mesmas cenas ou pede um corte próprio?',
-    '- Quem aprova o animatic: a agência ou direto a incorporadora?'
-  ].join('\n');
-  const segmentos = [
-    [4, 'outros', 'Vamos começar? A ideia hoje é fechar o formato do filme do Mirante para a gente conseguir rodar o animatic ainda este mês.'],
-    [18, 'eu', 'Perfeito. Eu vi o material que vocês mandaram. Antes de falar de cena, queria fechar duração e formato.'],
-    [320, 'outros', 'Sessenta segundos no horizontal. E a incorporadora pediu um corte vertical de quinze para as redes.'],
-    [465, 'eu', 'Então eu começaria pelo parque e pela vida do bairro, e deixaria o prédio para o final, como chegada.'],
-    [690, 'outros', 'A gente prefere sem locução. Texto na tela e uma trilha boa resolvem.'],
-    [820, 'eu', 'As imagens de drone foram feitas ao meio-dia e ficaram duras. Vale regravar no fim da tarde, com o prédio de frente e o parque ao fundo.'],
-    [1120, 'eu', 'Com o que já existe eu monto o animatic em uma semana. Só preciso do roteiro revisado e das imagens de fachada.'],
-    [1450, 'outros', 'Combinado. Roteiro e fachada chegam na semana que vem. E manda três opções de trilha para a gente escolher.']
-  ].map(([t, quem, texto]) => ({ t, quem, texto }));
-  return (exemplo.d = { id: EX, exemplo: true, titulo: 'Filme de lançamento do Mirante', inicio: quando.toISOString(), duracaoSeg: 1920, status: 'pronta', temMinuta: true, resumo, participantes: ['Você', 'Marina Lopes', 'Pedro Antunes'], minuta, segmentos, audio: null, ondas: [], projeto: '', tarefas: [4, 5], erro: '' });
+// ---------- reuniões de exemplo: aparecem enquanto não existe nenhuma gravação ----------
+// Três modelos, um por tipo de alinhamento. Sem nome de pessoa, marca ou empreendimento.
+const ehExemplo = (id) => String(id).indexOf('_exemplo') === 0;
+function exemplos() {
+  if (exemplos.d) return exemplos.d;
+  const dia = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
+  const em = (dias, h, m) => { const d = new Date(); d.setDate(d.getDate() - dias); d.setHours(h, m, 0, 0); return d.toISOString(); };
+  const monta = (n, titulo, inicio, duracaoSeg, participantes, resumo, corpo, falas) => {
+    const minuta = ['# ' + titulo, '> ' + resumo].concat(corpo).join('\n');
+    const t = corpo.filter((l) => RE_TAREFA.test(l));
+    return { id: '_exemplo' + n, exemplo: true, titulo, inicio, duracaoSeg, status: 'pronta', temMinuta: true, resumo, participantes, minuta, audio: null, ondas: [], projeto: '', erro: '',
+      tarefas: [t.filter((l) => l.match(RE_TAREFA)[1] === ' ').length, t.length], segmentos: falas.map(([s, quem, texto]) => ({ t: s, quem, texto })) };
+  };
+  return (exemplos.d = [
+    monta(1, 'Alinhamento de campanha', em(1, 10, 0), 2460, ['Você', 'Cliente', 'Agência'],
+      'Alinhamento da campanha de lançamento do produto. Ficaram fechados o conceito, as peças de cada canal e a data de entrada no ar. Falta o cliente aprovar a verba de mídia.', [
+      '## Tarefas',
+      '- [ ] **Agência** — enviar o plano de mídia com a divisão da verba (prazo: ' + dia(3) + ') [22:10]',
+      '- [ ] **Você** — apresentar duas rotas visuais para o filme principal (prazo: ' + dia(5) + ') [14:30]',
+      '- [ ] **Cliente** — aprovar a verba e o texto da oferta [31:45]',
+      '- [x] **Agência** — compartilhar o briefing e a pesquisa de público',
+      '## Decisões',
+      '- A campanha entra no ar em três semanas, começando pelo digital [06:20]',
+      '- Um filme principal de 30 segundos e três cortes de 10 para as redes [12:05]',
+      '- A oferta aparece só no fim das peças, nunca na abertura [17:40]',
+      '- Aprovação em duas etapas: conceito primeiro, peças depois [28:15]',
+      '## Conceito da campanha',
+      '- A ideia central é mostrar o produto resolvendo um problema do dia a dia, sem falar de preço [08:50]',
+      '- Tom leve e direto, com gente real e pouca fala',
+      '- A mesma cena de abertura liga todas as peças [10:30]',
+      '- Uma assinatura só, igual em todos os formatos',
+      '## O que foi falado',
+      '### Público',
+      '- Foco em quem já conhece a marca e ainda não comprou [04:10]',
+      '- A pesquisa mostra que a dúvida principal é o prazo de entrega [05:00]',
+      '### Mídia e verba',
+      '- A maior parte da verba vai para vídeo curto; o restante, para busca [20:30]',
+      '- Mídia de rua só entra se sobrar verba na segunda fase [23:15]',
+      '### Cronograma',
+      '- Conceito aprovado nesta semana, peças na seguinte [26:40]',
+      '- Uma semana de reserva antes da data de entrada no ar [27:30]',
+      '## Em aberto',
+      '- A verba de mídia ainda não foi aprovada',
+      '- O filme principal vai ter uma versão para TV?'
+    ], [
+      [6, 'outros', 'Vamos começar? Hoje a ideia é fechar o conceito da campanha e a lista de peças, para a produção começar na semana que vem.'],
+      [250, 'outros', 'O foco é quem já conhece a marca e ainda não comprou. A dúvida que mais aparece na pesquisa é o prazo de entrega.'],
+      [530, 'eu', 'Então eu mostraria o produto resolvendo um problema do dia a dia, sem falar de preço. A oferta entra só no fim.'],
+      [870, 'eu', 'Eu trago duas rotas visuais para o filme principal. A mesma cena de abertura pode ligar todas as peças.'],
+      [1905, 'outros', 'Combinado. A verba de mídia eu aprovo internamente e confirmo com vocês.']
+    ]),
+    monta(2, 'Alinhamento de social media', em(2, 14, 30), 1620, ['Você', 'Cliente'],
+      'Alinhamento do conteúdo do mês. Ficaram definidos os três temas, a frequência de posts e quem aprova. Falta o cliente mandar as fotos novas do produto.', [
+      '## Tarefas',
+      '- [ ] **Você** — montar o calendário do mês com o tema de cada semana (prazo: ' + dia(2) + ') [09:20]',
+      '- [ ] **Você** — editar os quatro vídeos curtos da primeira semana (prazo: ' + dia(6) + ') [15:10]',
+      '- [ ] **Cliente** — enviar as fotos novas do produto [12:40]',
+      '- [ ] **Cliente** — responder as aprovações em até um dia útil [19:05]',
+      '## Decisões',
+      '- Três posts por semana no feed e stories em todos os dias úteis [05:30]',
+      '- Vídeo curto tem prioridade sobre carrossel [07:15]',
+      '- Nada vai ao ar sem aprovação do cliente [18:20]',
+      '- Relatório no primeiro dia útil de cada mês [22:00]',
+      '## Linha editorial',
+      '- Tema 1: bastidores, mostrando como o produto é feito [06:10]',
+      '- Tema 2: dúvidas frequentes, uma por post [06:45]',
+      '- Tema 3: depoimentos de clientes, sempre em vídeo [07:00]',
+      '- Tom de conversa, frases curtas, sem jargão',
+      '## O que foi falado',
+      '### Formatos',
+      '- Vídeos de até 30 segundos, sempre com legenda [08:10]',
+      '- Carrossel só para conteúdo que pede passo a passo [08:40]',
+      '### Aprovação',
+      '- O calendário é aprovado de uma vez, no começo do mês [17:30]',
+      '- Ajuste de última hora é pedido por mensagem, com um dia de antecedência [19:05]',
+      '### Resultados',
+      '- No mês passado, os vídeos de bastidores tiveram o maior alcance [20:15]',
+      '- A meta deste mês é aumentar as mensagens recebidas, não os seguidores [21:10]',
+      '## Em aberto',
+      '- Vale colocar verba de anúncio nos vídeos que forem melhor?',
+      '- Quem responde os comentários no fim de semana?'
+    ], [
+      [5, 'eu', 'Queria fechar hoje os temas do mês e a frequência, para eu montar o calendário ainda esta semana.'],
+      [330, 'outros', 'Três posts por semana no feed está bom. E stories todo dia útil, mesmo que seja simples.'],
+      [370, 'eu', 'Fechado. Eu proponho três temas: bastidores, dúvidas frequentes e depoimentos de clientes.'],
+      [1100, 'outros', 'Só não pode ir nada ao ar sem eu ver antes. Eu respondo em até um dia útil.']
+    ]),
+    monta(3, 'Alinhamento de motion', em(3, 16, 0), 1980, ['Você', 'Cliente', 'Agência'],
+      'Alinhamento do vídeo institucional. Ficou fechado um vídeo de 60 segundos, sem locução, com animatic em uma semana. Falta a agência mandar o roteiro final e o material de marca.', [
+      '## Tarefas',
+      '- [ ] **Você** — montar o animatic com o material que já existe (prazo: ' + dia(7) + ') [18:40]',
+      '- [ ] **Você** — mandar três opções de trilha para aprovação [24:10]',
+      '- [ ] **Agência** — enviar o roteiro revisado [09:15]',
+      '- [ ] **Agência** — entregar o logo e as fontes em arquivo aberto [14:30]',
+      '- [x] **Cliente** — compartilhar a pasta com as filmagens',
+      '## Decisões',
+      '- O vídeo tem 60 segundos, em 16:9, com uma versão vertical de 15 segundos [05:20]',
+      '- Sem locução: texto na tela e trilha [11:30]',
+      '- Duas rodadas de ajuste incluídas; o que passar disso é orçado à parte [27:05]',
+      '- Entrega em três etapas: animatic, primeira versão e versão final [28:40]',
+      '## Conceito do vídeo',
+      '- Começa pelo problema, passa pela solução e fecha com a marca [07:45]',
+      '- Ritmo rápido no começo e mais calmo no fim',
+      '- Tipografia grande, uma ideia por tela [10:05]',
+      '- Transições por movimento de câmera, sem efeito chamativo',
+      '## O que foi falado',
+      '### Material bruto',
+      '- As filmagens atuais estão escuras; vale corrigir a cor antes de animar [13:40]',
+      '- Faltam imagens de detalhe do produto [14:05]',
+      '### Animação',
+      '- Os gráficos entram em 3D só nas duas cenas principais [16:20]',
+      '- O logo ganha uma animação curta de assinatura [17:10]',
+      '### Trilha e som',
+      '- Trilha instrumental, sem voz [23:30]',
+      '- Efeitos sonoros discretos nas transições [24:40]',
+      '## Em aberto',
+      '- A versão vertical usa as mesmas cenas ou pede um corte próprio?',
+      '- Quem aprova o animatic: a agência ou direto o cliente?'
+    ], [
+      [4, 'outros', 'Vamos começar? A ideia hoje é fechar o formato do vídeo para o animatic sair ainda este mês.'],
+      [320, 'outros', 'Sessenta segundos no horizontal, e um corte vertical de quinze para as redes.'],
+      [690, 'outros', 'A gente prefere sem locução. Texto na tela e uma trilha boa resolvem.'],
+      [820, 'eu', 'As filmagens estão escuras. Eu corrijo a cor antes de animar, mas ainda faltam imagens de detalhe do produto.'],
+      [1120, 'eu', 'Com o que já existe eu monto o animatic em uma semana. Só preciso do roteiro revisado e do logo em arquivo aberto.']
+    ])
+  ]);
 }
+const exemplo = (id) => exemplos().find((e) => e.id === id);
 
 // ---------- barra de cima ----------
 function desenharTopo() {
   const foco = document.activeElement && document.activeElement.id === 'q';
-  const pronta = S.sel && S.sel !== EX && S.det && S.det.status !== 'transcrevendo' && S.det.status !== 'erro';
+  const pronta = S.sel && !ehExemplo(S.sel) && S.det && S.det.status !== 'transcrevendo' && S.det.status !== 'erro';
   const noProj = !S.sel && S.proj && projeto(S.proj);
   $('#top').innerHTML = (S.sel || noProj ? '<button class="back" id="voltar" title="' + (S.sel && S.proj ? 'Voltar ao projeto' : 'Todas as notas') + '">' + ICO.volta + '</button>' : '<div class="brand">Goat Meet</div>')
     + '<div class="search">' + ICO.lupa + '<input id="q" placeholder="Buscar" spellcheck="false" value="' + esc(S.q) + '"></div>' + (!nativo && !S.sel && !S.proj ? '<button class="btn" id="verSetup">Ver primeira abertura</button>' : '') + '<span class="sp"></span>'
@@ -725,7 +800,7 @@ function desenharCatalogo() {
   const anima = S.animar !== false; S.animar = false;
   itens.forEach((r, n) => { h += cartao(r, n, anima); });
   h += '</div>';
-  if (S.lista.length === 1 && S.lista[0].exemplo) h += '<p class="exhint">Para gravar, clique no botão vermelho antes de entrar na chamada. O cartão acima é um exemplo e some quando você gravar a primeira reunião.</p>';
+  if (S.lista.every((r) => r.exemplo)) h += '<p class="exhint">Para gravar, clique no botão vermelho antes de entrar na chamada. Os cartões acima são exemplos e somem quando você gravar a primeira reunião.</p>';
   $('#wrap').innerHTML = h;
 }
 
@@ -1162,7 +1237,7 @@ function progressoDoModelo(e) {
 }
 
 // ---------- configurações ----------
-const CFG = { tela: 'inicio', perm: { mic: true, sistema: true }, agenda: { auto: true, ligar: true, ok: true, conta: 'Google Agenda' }, avisos: { mac: true, opcoes: [30, 15, 5], antes: [30, 15, 5], novo: false }, pasta: { caminho: '~/Goat Meet/Meet', real: '~/Goat Meet/Meet', ok: true, levar: true }, geral: { login: true }, nome: 'Braz', termos: ['Cinema 4D', 'Redshift', 'After Effects', 'animatic', 'monstro', 'pilotis', 'Mirante', 'Senna Tower'], claude: { app: true, pasta: true, skill: true } };
+const CFG = { tela: 'inicio', perm: { mic: true, sistema: true }, agenda: { auto: true, ligar: true, ok: true, conta: 'Google Agenda' }, avisos: { mac: true, opcoes: [30, 15, 5], antes: [30, 15, 5], novo: false }, pasta: { caminho: '~/Goat Meet/Meet', real: '~/Goat Meet/Meet', ok: true, levar: true }, geral: { login: true }, nome: 'Braz', termos: ['Cinema 4D', 'Redshift', 'After Effects', 'animatic', 'monstro', 'pilotis', 'storyboard', 'grade'], claude: { app: true, pasta: true, skill: true } };
 async function carregarConfig() {
   if (!nativo) return;
   const c = await chamar('config');
@@ -1286,7 +1361,7 @@ function igual(v) { return JSON.stringify(v, (k, x) => (x && typeof x === 'objec
 let assinaturaLista = '';
 async function carregarLista(forcar) {
   let l = await chamar('listar') || []; const p = await chamar('projetos') || [];
-  if (!l.length && CFG.pasta.ok) { const e = exemplo(); l = [{ id: e.id, titulo: e.titulo, inicio: e.inicio, duracaoSeg: e.duracaoSeg, status: e.status, temMinuta: true, resumo: e.resumo, participantes: e.participantes, projeto: '', tarefas: e.tarefas, exemplo: true }]; }
+  if (!l.length && CFG.pasta.ok) l = exemplos().map((e) => ({ id: e.id, titulo: e.titulo, inicio: e.inicio, duracaoSeg: e.duracaoSeg, status: e.status, temMinuta: true, resumo: e.resumo, participantes: e.participantes, projeto: '', tarefas: e.tarefas, exemplo: true }));
   const a = igual([l, p]);
   if (a === assinaturaLista && !forcar) return;
   if (!forcar && (editando() || S.menu)) return;
@@ -1307,12 +1382,12 @@ function editando() { const e = document.activeElement; return S.editar || !!e &
 
 async function abrir(id, aba, semRolar) {
   if (S.editar && S.det && S.det.id !== id) fimEdicao(true);
-  const d = id === EX ? exemplo() : await chamar('abrir', { id });
+  const d = ehExemplo(id) ? exemplo(id) : await chamar('abrir', { id });
   if (!d || !d.id) return;
   S.sel = id; S.det = d;
   S.aba = aba || (d.minuta ? 'minuta' : 'transcricao');
   const pronta = d.status !== 'transcrevendo' && d.status !== 'erro';
-  if (!S.gravando && pronta && id !== EX && (d.audio || !nativo) && (!S.som || S.som.id !== id)) {
+  if (!S.gravando && pronta && !ehExemplo(id) && (d.audio || !nativo) && (!S.som || S.som.id !== id)) {
     audio.pause();
     S.som = { id, titulo: d.titulo, dur: d.duracaoSeg, ondas: d.ondas || [] };
     if (d.audio) audio.src = nativo ? id : d.audio; else audio.removeAttribute('src');
@@ -1343,7 +1418,7 @@ function pedidoClaude(tipo, titulo, id) {
   return 'Faz o resumo' + onde;
 }
 async function enviarClaude(id, tipo) {
-  if (id === EX) return aviso('Este é só um exemplo.');
+  if (ehExemplo(id)) return aviso('Este é só um exemplo.');
   const r = S.det && S.det.id === id ? S.det : S.lista.find((x) => x.id === id);
   if (!r) return;
   const texto = pedidoClaude(tipo || (r.temMinuta || r.minuta ? 'livre' : 'resumo'), r.titulo, id);
@@ -1381,7 +1456,7 @@ function desenharDoca() {
   progresso();
 }
 async function ouvir(id, t) {
-  if (id === EX) return aviso('O exemplo não tem áudio.');
+  if (ehExemplo(id)) return aviso('O exemplo não tem áudio.');
   const d = S.det && S.det.id === id ? S.det : await chamar('abrir', { id });
   if (!d || !d.id) return;
   if (!d.audio && nativo) return aviso('Essa reunião não tem áudio.');
@@ -1546,7 +1621,7 @@ document.addEventListener('click', async (ev) => {
       setTimeout(() => { if (b.isConnected) { b.classList.remove('sure'); b.innerHTML = ICO.lixo; } }, 3000);
       return;
     }
-    if ((ev.shiftKey || ev.metaKey) && id !== EX) return marcar(id);
+    if ((ev.shiftKey || ev.metaKey) && !ehExemplo(id)) return marcar(id);
     S.marc = new Set(); S.armado = false;
     return abrir(id);
   }
@@ -1572,7 +1647,7 @@ document.addEventListener('contextmenu', (ev) => {
   ev.preventDefault();
   const c = ev.target.closest('.card');
   if (S.menu) fecharMenu();
-  if (!c || S.sel || c.dataset.id === EX) return;
+  if (!c || S.sel || ehExemplo(c.dataset.id)) return;
   const id = c.dataset.id, temp = !S.marc.has(id);
   if (temp) { S.marc = new Set([id]); S.armado = false; redesenharLista(); }
   abrirMenu(ev.clientX, ev.clientY, 'tudo', temp);
@@ -1734,14 +1809,13 @@ function dadosExemplo() {
     '- O valor não foi fechado na chamada'
   ].join('\n');
   const base = { segmentos: seg, audio: null, ondas };
-  return [
-    exemplo(),
+  return exemplos().concat([
     Object.assign({ id: 'a', titulo: 'Ajustes do filme', inicio: h(0, 10, 40), duracaoSeg: 2280, agenda: { tipo: 'criado' }, status: 'pronta', resumo: 'Alinhamento da versão 3 do filme. Três ajustes definidos (cor da fachada, trilha e ordem de dois takes) e versão final na quinta, se a trilha chegar até terça.', participantes: ['Braz', 'Marina Lopes'], minuta, projeto: 'p2' }, base),
     Object.assign({ id: 'b', titulo: 'Alinhamento de pauta', inicio: h(0, 9, 5), duracaoSeg: 940, agenda: { tipo: 'criado' }, status: 'pronta', resumo: '', participantes: [], minuta: null }, base),
     Object.assign({ id: 'c', titulo: 'Reunião 26/11 16:00', inicio: h(1, 16, 0), duracaoSeg: 3120, agenda: { tipo: 'criado' }, status: 'transcrevendo', resumo: '', participantes: [], minuta: null }, base, { segmentos: [] }),
     Object.assign({ id: 'd', titulo: 'Kickoff da campanha de lançamento', inicio: h(4, 14, 30), duracaoSeg: 4260, agenda: { tipo: 'evento', titulo: 'Kickoff campanha' }, status: 'pronta', resumo: 'Escopo do filme e das peças de apoio, cronograma em três entregas e quem aprova cada etapa. O roteiro fica com a agência; o animatic sai em duas semanas.', participantes: ['Braz', 'Carla Dias', 'Pedro Antunes', 'Lia Moura'], minuta: kickoff, projeto: 'p2' }, base),
     Object.assign({ id: 'e', titulo: 'Orçamento das animações de painel', inicio: h(19, 11, 0), duracaoSeg: 1500, agenda: { tipo: 'criado' }, status: 'pronta', resumo: 'Proposta por projeto, com duas rodadas de ajuste incluídas. Prazo de 15 dias a partir da aprovação do storyboard.', participantes: ['Braz', 'Rui Prado'], minuta: orc }, base)
-  ];
+  ]);
 }
 </script>
 </body>
