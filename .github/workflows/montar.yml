@@ -65,7 +65,7 @@ jobs:
           test -x "$APP/Contents/MacOS/whisper-cli"
           codesign --verify --strict "$APP"
           codesign -d -r- "$APP" 2>&1 | tee requisito.txt
-          if [ -n "${GOAT_ASSINATURA:-}" ]; then grep -q "certificate leaf" requisito.txt; fi
+          if [ -n "${GOAT_ASSINATURA:-}" ]; then grep -q -E "certificate (leaf|root)" requisito.txt; fi
 
       - name: Empacotar
         run: |

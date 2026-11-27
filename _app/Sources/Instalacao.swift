@@ -28,7 +28,7 @@ func requisitoFixo(_ caminho: String) -> String? {
     let r = executar("/usr/bin/codesign", ["-d", "-r-", caminho])
     for linha in r.saida.components(separatedBy: "\n") {
         if linha.hasPrefix("designated =>") {
-            return linha.contains("certificate leaf") ? linha : nil
+            return (linha.contains("certificate leaf") || linha.contains("certificate root")) ? linha : nil
         }
     }
     return nil
