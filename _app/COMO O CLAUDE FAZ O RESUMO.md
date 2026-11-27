@@ -10,7 +10,7 @@ A pasta das gravações é escolhida pelo Braz nos ajustes do app. O caminho atu
 
 Cada reunião é uma subpasta com o nome da data e hora, por exemplo `2026-11-27 10h54`:
 
-- `reuniao.json`: titulo, inicio, duracaoSeg, status (`pronta`, `transcrevendo`, `erro`), participantes, tituloAutomatico. Pode ter também `agenda` e `ondas`: não mexa neles.
+- `reuniao.json`: titulo, inicio, duracaoSeg, status (`pronta`, `transcrevendo`, `erro`), participantes, tituloAutomatico. Pode ter também `agenda`, `ondas` e `projeto`: não mexa neles.
 - `transcricao.md`: transcrição com horário e quem falou. "Você" é o microfone do Braz. "Outros" é o som da chamada, com todas as outras pessoas juntas.
 - `minuta.md`: o resumo (pode não existir ainda). O nome do arquivo é esse por motivo histórico; na conversa e no texto, diga sempre "resumo".
 
@@ -18,23 +18,35 @@ Cada reunião é uma subpasta com o nome da data e hora, por exemplo `2026-11-27
 
 ## Como escrever `minuta.md`
 
-Leia `reuniao.json` e `transcricao.md` inteiros. Grave `minuta.md` na pasta da reunião neste formato:
+Leia `reuniao.json` e `transcricao.md` inteiros. Grave `minuta.md` na pasta da reunião neste formato, com as seções nesta ordem:
 
 ```
 # Título curto da reunião
 
-> Resumo em 2 a 3 frases: o que foi a reunião e o que saiu dela.
+> Abertura em 2 a 3 frases: o que foi a reunião e o que saiu dela.
 
-## Temas
+## Projeto
+- **Cliente:** quem contratou
+- **Construtora:** 
+- **Local:** cidade ou endereço do empreendimento
+- **Entrega:** o que o Braz vai entregar (peça, duração, formatos)
+- **Valor:** 
+- **Pagamento:** como e quando paga
+- **Prazo:** data ou período da entrega
 
-### Nome do tema
-- Ponto discutido [12:34]
+## Tarefas
+- [ ] **Responsável** — o que fazer (prazo: dd/mm) [12:34]
 
 ## Decisões
 - O que ficou decidido
 
-## Pendências
-- [ ] **Responsável** — o que fazer (prazo: dd/mm)
+## Conceito do filme
+- A ideia, a ordem das cenas, referências, trilha, locução
+
+## O que foi falado
+
+### Nome do tema
+- Ponto discutido [12:34]
 
 ## Em aberto
 - Dúvidas ou pontos sem definição
@@ -42,13 +54,23 @@ Leia `reuniao.json` e `transcricao.md` inteiros. Grave `minuta.md` na pasta da r
 
 Regras:
 
-- O bloco `>` depois do título é o resumo que aparece no cartão da reunião. Sempre inclua.
+- A ordem é sempre essa: o que pede ação (ficha e tarefas) vem antes do que é registro.
+- O bloco `>` depois do título aparece no cartão da reunião. Sempre inclua. Curto: até 220 caracteres aparecem no cartão.
+- **Projeto**: escreva sempre as sete linhas, nessa ordem e com esses nomes. Preencha só com o que foi dito na reunião. O que não foi dito fica vazio depois dos dois pontos: o Braz preenche no app. Se o valor é uma dedução sua, termine com "(dedução)". Não use `{?...}` nem `[mm:ss]` nessas linhas.
+- **Tarefas**: cada item começa com `- [ ]`. O app deixa o Braz marcar como feito, e aí vira `- [x]`. Prazo, só quando foi dito, exatamente assim: `(prazo: dd/mm)`. Sem prazo, não escreva nada. Use "Braz" para o que ele assumiu; para os outros, o nome se ele aparece na conversa, senão "Cliente", "Agência" ou "Outros". Tudo que envolve dinheiro e documento vira tarefa: emitir nota fiscal, mandar orçamento, cobrar parcela.
+- **Conceito do filme**: só quando a reunião é sobre um filme ou uma peça. Se não for, deixe a seção de fora.
+- **O que foi falado**: por tema, não em ordem cronológica. Não repita o que já está nas outras seções.
 - `[mm:ss]` vira um botão que toca o áudio naquele ponto. Use os horários da transcrição nos pontos importantes.
-- Organize por tema, não em ordem cronológica.
-- Escreva só o que está na transcrição. Se um valor ou prazo foi deduzido pelo contexto, diga que é dedução.
-- Em Pendências, cada item começa com `- [ ]`. O app deixa o Braz marcar como feito, e aí vira `- [x]`. Prazo, só quando foi dito, no fim da linha e exatamente assim: `(prazo: dd/mm)`. Sem prazo, não escreva nada.
-- Em Pendências, use "Braz" para o que ele assumiu. Para os outros, use o nome se ele aparece na conversa; se não, "Cliente", "Agência" ou "Outros".
+- Escreva só o que está na transcrição. Se um nome, valor ou prazo foi deduzido pelo contexto, diga que é dedução.
 - Português do Brasil, texto direto.
+
+## Projetos
+
+O Braz agrupa reuniões do mesmo trabalho em projetos. A lista fica em `_claude/projetos.json`, dentro da pasta das gravações: cada projeto tem `id`, `nome` e `ficha` (os mesmos sete campos da seção Projeto). A reunião que está em um projeto tem o `id` dele no campo `projeto` do `reuniao.json`.
+
+- Ao escrever o resumo de uma reunião que tem `projeto`, atualize também a `ficha` desse projeto em `projetos.json`: preencha os campos vazios e corrija os que a reunião mudou (um prazo novo, um valor fechado). Não apague campo que o Braz preencheu, a não ser que a reunião tenha dito outra coisa.
+- Não crie projeto nem mude o campo `projeto` de uma reunião por conta própria. Quem agrupa é o Braz, no app.
+- Quando o pedido for o resumo de um projeto (várias reuniões juntas), leia o resumo e, se precisar, a transcrição de cada uma, e responda no chat com: a ficha atual, as tarefas abertas somadas (dizendo de qual reunião veio cada uma), as decisões que continuam valendo e o que mudou de uma reunião para a outra. Atualize a `ficha` do projeto se encontrar informação nova.
 
 ## Nomes em dúvida
 
@@ -66,7 +88,7 @@ A transcrição erra nomes próprios (clientes, empreendimentos, pessoas).
 
 ## Responder no chat
 
-Resposta curta: o resumo em 2 ou 3 frases, as pendências do Braz e a frase "O resumo completo está no Goat Meet". Não cole o resumo inteiro no chat, a não ser que ele peça.
+Resposta curta: o resumo em 2 ou 3 frases, as tarefas do Braz e a frase "O resumo completo está no Goat Meet". Não cole o resumo inteiro no chat, a não ser que ele peça.
 
 ## Outros pedidos sobre reuniões
 

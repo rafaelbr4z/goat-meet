@@ -143,6 +143,8 @@ func listarReunioes() -> [[String: Any]] {
         r["temMinuta"] = minuta != nil
         r["resumo"] = minuta == nil ? "" : resumoDaMinuta(minuta ?? "")
         r["participantes"] = (m["participantes"] as? [String]) ?? [String]()
+        r["projeto"] = (m["projeto"] as? String) ?? ""
+        r["tarefas"] = tarefasDaMinuta(minuta ?? "")
         out.append(r)
     }
     out.sort { (a, b) in
@@ -164,6 +166,7 @@ func abrirReuniao(_ id: String) -> [String: Any]? {
     o["participantes"] = (m["participantes"] as? [String]) ?? [String]()
     o["erro"] = (m["erro"] as? String) ?? ""
     o["ondas"] = (m["ondas"] as? [Any]) ?? [Any]()
+    o["projeto"] = (m["projeto"] as? String) ?? ""
     if let ag = m["agenda"] as? [String: Any] {
         var a = [String: Any]()
         a["tipo"] = (ag["tipo"] as? String) ?? "criado"
@@ -1146,6 +1149,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
                 r["ok"] = true
             }
             responder(n, r)
+        case "projetos":
+            responder(n, projetosParaInterface())
+        case "agrupar":
+            let idsParaAgrupar = (b["ids"] as? [String]) ?? [String]()
+            let nomeDoProjeto = ((b["nome"] as? String) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            var resposta = [String: Any]()
+            resposta["id"] = agruparReunioes(idsParaAgrupar, projeto: (b["projeto"] as? String) ?? "", nome: nomeDoProjeto)
+            responder(n, resposta)
+        case "desagrupar":
+            desagruparReunioes((b["ids"] as? [String]) ?? [String]())
+            responder(n, vazio)
+        case "salvarProjeto":
+            let nomeNovo = ((b["nome"] as? String) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            salvarProjeto(id, nome: nomeNovo, ficha: b["ficha"] as? [String: Any])
+            responder(n, vazio)
+        case "apagarProjeto":
+            apagarProjeto(id)
+            responder(n, vazio)
         case "escolherPasta":
             escolherPasta(levar: (b["levar"] as? NSNumber)?.boolValue ?? true) { r in self.responder(n, r) }
         default:

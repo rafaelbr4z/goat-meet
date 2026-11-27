@@ -560,3 +560,153 @@ final class Avisos: NSObject {
         fechar(animado: true)
     }
 }
+
+// MARK: - Projetos (grupos de reuniões)
+
+/// Os projetos ficam em `_claude/projetos.json`, dentro da pasta das gravações: [{id, nome, ficha}].
+/// Cada reunião guarda o id do projeto dela no campo `projeto` do `reuniao.json`.
+var projetosURL: URL { reunioesDir.appendingPathComponent("_claude/projetos.json") }
+
+func lerProjetos() -> [[String: Any]] {
+    guard let d = try? Data(contentsOf: projetosURL),
+          let o = try? JSONSerialization.jsonObject(with: d),
+          let a = o as? [[String: Any]] else { return [] }
+    return a
+}
+
+func gravarProjetos(_ lista: [[String: Any]]) {
+    let pasta = projetosURL.deletingLastPathComponent()
+    try? FileManager.default.createDirectory(at: pasta, withIntermediateDirectories: true)
+    guard let d = try? JSONSerialization.data(withJSONObject: lista, options: [.prettyPrinted, .sortedKeys]) else { return }
+    try? d.write(to: projetosURL, options: .atomic)
+}
+
+/// Só os projetos que têm pelo menos uma reunião.
+func projetosParaInterface() -> [[String: Any]] {
+    var usados = Set<String>()
+    for id in idsDasReunioes() {
+        if let m = lerMeta(id), let p = m["projeto"] as? String, !p.isEmpty { usados.insert(p) }
+    }
+    var out: [[String: Any]] = []
+    for p in lerProjetos() {
+        guard let pid = p["id"] as? String, usados.contains(pid) else { continue }
+        var o = [String: Any]()
+        o["id"] = pid
+        o["nome"] = (p["nome"] as? String) ?? "Projeto"
+        o["ficha"] = (p["ficha"] as? [String: Any]) ?? [String: Any]()
+        out.append(o)
+    }
+    return out
+}
+
+/// Lê a seção "## Projeto" do resumo: linhas "- **Campo:** valor".
+func fichaDaMinuta(_ texto: String) -> [String: String] {
+    var f = [String: String]()
+    var dentro = false
+    for l in texto.components(separatedBy: "\n") {
+        let t = l.trimmingCharacters(in: .whitespaces)
+        if t.hasPrefix("## ") {
+            let titulo = String(t.dropFirst(3)).trimmingCharacters(in: .whitespaces).lowercased()
+            dentro = titulo == "projeto"
+            continue
+        }
+        if !dentro { continue }
+        if !(t.hasPrefix("- **") || t.hasPrefix("* **")) { continue }
+        let resto = String(t.dropFirst(4))
+        guard let fim = resto.range(of: "**") else { continue }
+        var chave = String(resto[..<fim.lowerBound]).trimmingCharacters(in: .whitespaces)
+        var valor = String(resto[fim.upperBound...]).trimmingCharacters(in: .whitespaces)
+        if chave.hasSuffix(":") { chave = String(chave.dropLast()).trimmingCharacters(in: .whitespaces) }
+        if valor.hasPrefix(":") { valor = String(valor.dropFirst()).trimmingCharacters(in: .whitespaces) }
+        if !chave.isEmpty { f[chave] = valor }
+    }
+    return f
+}
+
+/// Conta as tarefas do resumo: [abertas, total].
+func tarefasDaMinuta(_ texto: String) -> [Int] {
+    var abertas = 0
+    var total = 0
+    for l in texto.components(separatedBy: "\n") {
+        let t = l.trimmingCharacters(in: .whitespaces)
+        if t.hasPrefix("- [ ] ") || t.hasPrefix("* [ ] ") {
+            abertas += 1
+            total += 1
+        } else if t.hasPrefix("- [x] ") || t.hasPrefix("- [X] ") || t.hasPrefix("* [x] ") || t.hasPrefix("* [X] ") {
+            total += 1
+        }
+    }
+    return [abertas, total]
+}
+
+/// Põe as reuniões em um projeto. Sem id de projeto existente, cria um novo com o nome dado.
+/// A ficha do projeto recebe o que os resumos já trazem, sem apagar o que estava preenchido.
+func agruparReunioes(_ ids: [String], projeto: String, nome: String) -> String {
+    var lista = lerProjetos()
+    var pid = projeto
+    var indice = -1
+    for (i, p) in lista.enumerated() {
+        if let x = p["id"] as? String, x == pid, !pid.isEmpty { indice = i }
+    }
+    if indice < 0 {
+        pid = "p" + String(Int(Date().timeIntervalSince1970))
+        var novo = [String: Any]()
+        novo["id"] = pid
+        novo["nome"] = nome.isEmpty ? "Projeto" : nome
+        novo["ficha"] = [String: Any]()
+        lista.append(novo)
+        indice = lista.count - 1
+    }
+    var ficha = (lista[indice]["ficha"] as? [String: Any]) ?? [String: Any]()
+    let destino = pid
+    for id in ids.sorted(by: >) {
+        guard lerMeta(id) != nil, let dir = pastaReuniao(id) else { continue }
+        atualizarMeta(id) { meta in
+            meta["projeto"] = destino
+        }
+        guard let minuta = lerMinuta(dir) else { continue }
+        for (campo, valor) in fichaDaMinuta(minuta) {
+            if valor.isEmpty { continue }
+            let atual = (ficha[campo] as? String) ?? ""
+            if atual.isEmpty { ficha[campo] = valor }
+        }
+    }
+    lista[indice]["ficha"] = ficha
+    gravarProjetos(lista)
+    return destino
+}
+
+func desagruparReunioes(_ ids: [String]) {
+    for id in ids {
+        atualizarMeta(id) { meta in
+            _ = meta.removeValue(forKey: "projeto")
+        }
+    }
+}
+
+func salvarProjeto(_ id: String, nome: String, ficha: [String: Any]?) {
+    var lista = lerProjetos()
+    for i in lista.indices {
+        guard let x = lista[i]["id"] as? String, x == id else { continue }
+        if !nome.isEmpty { lista[i]["nome"] = nome }
+        if let f = ficha { lista[i]["ficha"] = f }
+    }
+    gravarProjetos(lista)
+}
+
+/// Desfaz o projeto. As reuniões continuam guardadas, só deixam de estar agrupadas.
+func apagarProjeto(_ id: String) {
+    if id.isEmpty { return }
+    for r in idsDasReunioes() {
+        if let m = lerMeta(r), let p = m["projeto"] as? String, p == id {
+            atualizarMeta(r) { meta in
+                _ = meta.removeValue(forKey: "projeto")
+            }
+        }
+    }
+    let resto = lerProjetos().filter { p in
+        let x = (p["id"] as? String) ?? ""
+        return x != id
+    }
+    gravarProjetos(resto)
+}

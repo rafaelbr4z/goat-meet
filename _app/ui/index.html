@@ -304,6 +304,94 @@ input{font:inherit;color:inherit}
 
 .toast{position:absolute;left:50%;top:36px;transform:translate(-50%,-10px);background:var(--ink);color:var(--inverse-text);font:500 14px/1 var(--font-text);padding:13px 20px;border-radius:var(--r-pill);opacity:0;pointer-events:none;transition:.25s;box-shadow:var(--shadow-float);white-space:nowrap;z-index:6}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---- cartão: resumo curto, rodapé, lixeira e seleção ---- */
+.card{min-height:312px}
+.card .sum{-webkit-line-clamp:5}
+.card .foot{display:flex;align-items:center;gap:var(--s2);margin-top:auto;padding-top:var(--s5);min-height:calc(36px + var(--s5))}
+.card .foot .sp{flex:1}
+.card .foot .meta{white-space:nowrap}
+.ptag{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 13px 0 11px;border-radius:var(--r-pill);background:var(--fill);font:500 13.5px/1 var(--font-text);color:var(--ink);max-width:50%;white-space:nowrap;transition:background .15s}
+.ptag::before{content:"";width:7px;height:7px;border-radius:2px;background:currentColor;flex:none}
+.ptag span{overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.ptag:hover{background:var(--fill-hover)}
+.bin{height:36px;min-width:36px;padding:0 9px;border-radius:var(--r-pill);display:inline-flex;align-items:center;justify-content:center;color:var(--muted);font:500 13.5px/1 var(--font-text);opacity:0;flex:none;transition:opacity .15s,background .15s,color .15s}
+.card:hover .bin,.card.sel .bin,.bin.sure{opacity:1}
+.bin:hover{background:var(--fill);color:var(--ink)}
+.bin.sure,.bin.sure:hover{padding:0 14px;background:var(--signal);color:var(--inverse-text)}
+.card.sel{outline:2.5px solid var(--inverse-surface);outline-offset:3px}
+
+/* ---- projetos na página inicial ---- */
+.today.com{margin-bottom:var(--s5)}
+.projs{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s6)}
+.btn .n{font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums}
+.btn.pri .n{color:var(--inverse-muted)}
+
+/* ---- menu do botão direito ---- */
+.menu{position:fixed;z-index:20;min-width:248px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-row);padding:6px;box-shadow:var(--shadow-float);animation:pop .14s both;transform-origin:0 0}
+.menu[hidden]{display:none}
+.mi{display:flex;align-items:center;gap:10px;width:100%;height:38px;padding:0 12px;border-radius:var(--r-sm);font:400 15px/1 var(--font-text);color:var(--ink);text-align:left;white-space:nowrap}
+.mi:hover{background:var(--fill)}
+.mi span{overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.mi .k{margin-left:auto;color:var(--muted);font-size:13px}
+.mi.on::after{content:"";margin-left:auto;width:9px;height:5px;border-left:1.8px solid currentColor;border-bottom:1.8px solid currentColor;transform:rotate(-45deg) translateY(-2px);flex:none}
+.mi.danger{color:var(--signal)}
+.mi.sure,.mi.sure:hover{background:var(--signal);color:var(--inverse-text)}
+.menu .lab{padding:10px 12px 6px;font:500 12.5px/1 var(--font-text);color:var(--muted)}
+.menu .sep{height:1px;background:var(--border);margin:6px 8px}
+.menu .novo{display:flex;gap:6px;padding:4px 6px 6px}
+.menu .novo input{flex:1;min-width:0;height:40px;border-radius:var(--r-pill);border:0;background:var(--fill);padding:0 var(--s4);outline:none;font:400 15px/1 var(--font-text);-webkit-user-select:text;user-select:text}
+.menu .novo .btn{height:40px;padding:0 var(--s4)}
+
+/* ---- barra de seleção ---- */
+.selbar{position:absolute;left:var(--s8);bottom:var(--edge);z-index:5;display:flex;align-items:center;gap:var(--s2);height:60px;padding:0 8px 0 22px;border-radius:var(--r-pill);background:var(--inverse-surface);color:var(--inverse-text);box-shadow:var(--shadow-float);animation:in .22s both;font:var(--t-label)}
+.selbar[hidden]{display:none}
+.selbar b{font-weight:500;margin-right:var(--s3);white-space:nowrap}
+.selbar button{height:44px;padding:0 18px;border-radius:var(--r-pill);background:var(--inverse-fill);font:var(--t-label);white-space:nowrap;transition:background .15s}
+.selbar button:hover{background:var(--inverse-fill-hover)}
+.selbar .del.sure,.selbar .del.sure:hover{background:var(--signal)}
+.selbar .x,.selbar .x:hover{width:44px;padding:0;background:none;color:var(--inverse-muted);font-size:20px}
+.selbar .x:hover{color:var(--inverse-text)}
+
+/* ---- ficha do projeto ---- */
+.fbox{margin:var(--s6) 0 0;-webkit-user-select:none;user-select:none}
+.fhead{display:flex;align-items:center;gap:var(--s3);min-height:32px;margin-bottom:var(--s3);font:var(--t-heading);color:var(--ink)}
+.fhead .sp{flex:1}
+.fhead .ptag{max-width:60%}
+.ficha{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-row);overflow:hidden}
+.fc{background:var(--surface);padding:14px 18px 15px;display:flex;flex-direction:column;gap:5px;cursor:text;min-width:0;transition:background .15s}
+.fc:last-child:nth-child(odd){grid-column:span 2}
+.fc:hover,.fc:focus-within{background:var(--bg)}
+.fl{font:var(--t-meta);color:var(--muted)}
+.fv{font:500 16px/1.4 var(--font-text);color:var(--ink);outline:none;min-height:22px;-webkit-user-select:text;user-select:text;overflow-wrap:anywhere}
+.fv:empty::before{content:"Definir";font-weight:400;color:var(--faint)}
+
+/* ---- resumo em modo de edição ---- */
+.md.edit .ed{outline:none;border-radius:var(--r-sm);cursor:text;transition:background .15s,box-shadow .15s}
+.md.edit .ed:hover{background:var(--fill);box-shadow:0 0 0 5px var(--fill)}
+.md.edit .ed:focus{background:var(--surface);box-shadow:0 0 0 5px var(--surface),0 0 0 6.5px var(--ink)}
+.md.edit li{padding-right:36px}
+.md.edit li.todo{cursor:default}
+.md.edit li .rm{position:absolute;right:0;top:-1px;width:28px;height:28px;border-radius:50%;color:var(--muted);font-size:18px;line-height:1;opacity:0;transition:opacity .15s,background .15s,color .15s}
+.md.edit li:hover .rm,.md.edit li:focus-within .rm{opacity:1}
+.md.edit li .rm:hover{background:var(--fill);color:var(--signal)}
+.md.edit .due.none{opacity:1}
+.md.edit .duv{cursor:text}
+.md.edit .tx:empty::before{content:"Escreva aqui";color:var(--faint)}
+.addli{display:block;font:var(--t-meta);color:var(--muted);padding:6px 10px;margin:-4px 0 var(--s3) 10px;border-radius:var(--r-sm)}
+.addli:hover{color:var(--ink);background:var(--fill)}
+.edbar{display:flex;align-items:center;gap:var(--s2)}
+
+/* ---- página do projeto ---- */
+.sheet.wide{max-width:none;margin-left:0;margin-right:0}
+.sheet.wide>*{max-width:800px}
+.sheet.wide>.grid,.sheet.wide>.sec{max-width:none}
+.sheet.wide>.md{margin-top:var(--s7)}
+.sheet .grid{-webkit-user-select:none;user-select:none;cursor:default}
+.sec{font:var(--t-heading);color:var(--ink);margin:var(--s7) 0 var(--s5);padding-top:var(--s6);border-top:1px solid var(--border)}
+.md li.todo .from{flex:none;font:var(--t-meta);color:var(--muted);max-width:38%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pfim{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s6);-webkit-user-select:none;user-select:none}
+.pfim .quiet{margin-left:-8px}
 </style>
 </head>
 <body>
@@ -315,6 +403,8 @@ input{font:inherit;color:inherit}
 <div id="fab"></div>
 <div class="prox" id="prox" hidden></div>
 <div class="veil" id="veil" hidden></div>
+<div class="selbar" id="selbar" hidden></div>
+<div class="menu" id="menu" hidden></div>
 <div class="toast" id="toast"></div>
 <audio id="audio" preload="metadata"></audio>
 
@@ -335,7 +425,7 @@ function chamar(cmd, args) {
 }
 
 // ---------- estado ----------
-const S = { lista: [], sel: null, det: null, aba: 'minuta', q: '', gravando: false, inicio: 0, micOk: true, tituloNovo: '', ocupado: false, som: null, prox: null, tituloPend: '', pop: null, agenda: [] };
+const S = { lista: [], sel: null, det: null, aba: 'minuta', q: '', gravando: false, inicio: 0, micOk: true, tituloNovo: '', ocupado: false, som: null, prox: null, tituloPend: '', pop: null, agenda: [], proj: null, projetos: [], projDet: {}, marc: new Set(), menu: null, armado: false, editar: false };
 const $ = (s) => document.querySelector(s);
 // No app, quem toca o áudio é o próprio Mac (funciona com a pasta em qualquer disco). Este objeto imita o player da página.
 function somNativo() {
@@ -423,6 +513,8 @@ const ICO = {
   mic: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg>',
   cal: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
   pasta: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v7.500a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg>',
+  check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  lixo: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.8 11.5a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7M10 11v5.5M14 11v5.5"/></svg>',
   lupa: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5" stroke-linecap="round"/></svg>'
 };
 
@@ -461,7 +553,7 @@ function markdown(src) {
     const l = L[i];
     let m;
     if (!l.trim()) { fecha(); i++; continue; }
-    if ((m = l.match(/^(#{1,3})\s+(.*)$/))) { fecha(); h += '<h' + m[1].length + '>' + inline(m[2]) + '</h' + m[1].length + '>'; i++; continue; }
+    if ((m = l.match(/^(#{1,3})\s+(.*)$/))) { fecha(); if (m[1].length === 2 && /^projeto$/i.test(m[2].trim())) { i++; while (i < L.length && !/^##\s/.test(L[i])) i++; continue; } h += '<h' + m[1].length + '>' + inline(m[2]) + '</h' + m[1].length + '>'; i++; continue; }
     if (/^(-{3,}|\*{3,})\s*$/.test(l)) { fecha(); h += '<hr>'; i++; continue; }
     if (/^>\s?/.test(l)) { fecha(); const b = []; while (i < L.length && /^>\s?/.test(L[i])) b.push(L[i++].replace(/^>\s?/, '')); h += '<blockquote><p>' + inline(b.join(' ')) + '</p></blockquote>'; continue; }
     if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < L.length && /^\s*\|[\s:|-]+\|\s*$/.test(L[i + 1])) {
@@ -494,9 +586,10 @@ function markdown(src) {
 function desenharTopo() {
   const foco = document.activeElement && document.activeElement.id === 'q';
   const pronta = S.sel && S.det && S.det.status !== 'transcrevendo' && S.det.status !== 'erro';
-  $('#top').innerHTML = (S.sel ? '<button class="back" id="voltar" title="Todas as notas">' + ICO.volta + '</button>' : '<div class="brand">Goat Meet</div>')
+  const noProj = !S.sel && S.proj && projeto(S.proj);
+  $('#top').innerHTML = (S.sel || noProj ? '<button class="back" id="voltar" title="' + (S.sel && S.proj ? 'Voltar ao projeto' : 'Todas as notas') + '">' + ICO.volta + '</button>' : '<div class="brand">Goat Meet</div>')
     + '<div class="search">' + ICO.lupa + '<input id="q" placeholder="Buscar" spellcheck="false" value="' + esc(S.q) + '"></div><span class="sp"></span>'
-    + (pronta ? '<button class="btn pri" data-claude="' + (S.det.minuta ? 'livre' : 'resumo') + '">Enviar pro Claude</button>' : '');
+    + (pronta && S.editar ? '<button class="btn" id="cancelarEd">Cancelar</button><button class="btn pri" id="concluirEd">Concluir edição</button>' : pronta ? '<button class="btn pri" data-claude="' + (S.det.minuta ? 'livre' : 'resumo') + '">Enviar pro Claude</button>' : noProj ? '<button class="btn pri" data-claude-proj>Enviar projeto pro Claude</button>' : '');
   $('#fab').innerHTML = '<button class="recbtn' + (S.gravando ? ' on' : '') + '" id="rec" title="' + (S.gravando ? 'Parar e transcrever' : 'Gravar reunião') + '"' + (S.ocupado ? ' disabled' : '') + '>'
     + (S.gravando ? '<i></i>' : ICO.mic) + '</button>';
   if (foco) { const q = $('#q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
@@ -505,26 +598,26 @@ function desenharTopo() {
 // ---------- catálogo (cartões) ----------
 function cabecalho() {
   const d = new Date(), dia = DIAS[d.getDay()] + (d.getDay() % 6 ? '-feira' : '');
-  return '<h1 class="page">Meet Notes</h1><p class="today">' + dia[0].toUpperCase() + dia.slice(1) + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()] + '</p>';
+  const ps = S.projetos.map((p) => [p, S.lista.filter((r) => r.projeto === p.id).length]).filter((x) => x[1]);
+  return '<h1 class="page">Meet Notes</h1><p class="today' + (ps.length ? ' com' : '') + '">' + dia[0].toUpperCase() + dia.slice(1) + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()] + '</p>'
+    + (ps.length ? '<div class="projs"><button class="btn pri">Todas <span class="n">' + S.lista.length + '</span></button>'
+      + ps.map((x) => '<button class="btn" data-proj="' + esc(x[0].id) + '" title="Abrir o projeto">' + esc(x[0].nome) + ' <span class="n">' + x[1] + '</span></button>').join('') + '</div>' : '');
 }
-function cartao(r, n, anima) {
-  const d = new Date(r.inicio);
-  const pronta = r.status !== 'transcrevendo' && r.status !== 'erro';
+function cartao(r, n, anima, semProjeto) {
+  const d = new Date(r.inicio), marc = S.marc.has(r.id), p = !semProjeto && r.projeto && projeto(r.projeto), t = r.tarefas || [0, 0];
   let sum;
   if (r.status === 'transcrevendo') sum = '<p class="sum"><span class="run"></span>Transcrevendo no seu Mac. Pode continuar trabalhando.</p>';
   else if (r.status === 'erro') sum = '<p class="sum none">A transcrição falhou. Abra para tentar de novo; o áudio foi preservado.</p>';
   else if (r.temMinuta) sum = '<p class="sum">' + esc(r.resumo || 'Resumo pronto.') + '</p>';
-  else sum = '<p class="sum none">Ainda sem resumo. Envie pro Claude e ele aparece aqui.</p>';
-  const acoes = pronta && !r.temMinuta
-    ? '<button class="btn pri" data-claude>Enviar pro Claude</button><button class="btn" data-abrir="transcricao">Abrir</button>'
-    : '<button class="btn pri" data-abrir="minuta">Abrir</button><button class="btn" data-ouvir' + (pronta ? '' : ' disabled') + '>Ouvir</button>';
-  return '<article class="card' + (anima ? ' entra' : '') + '" data-id="' + esc(r.id) + '" style="animation-delay:' + Math.min(n * 45, 360) + 'ms">'
-    + '<div class="toprow"><div class="badge">' + ICO.onda + '</div><span class="meta">' + esc(dataCurta(d)) + ' · ' + duracao(r.duracaoSeg) + '</span></div>'
+  else sum = '<p class="sum none">Ainda sem resumo.</p>';
+  return '<article class="card' + (anima ? ' entra' : '') + (marc ? ' sel' : '') + '" data-id="' + esc(r.id) + '" style="animation-delay:' + Math.min(n * 45, 360) + 'ms">'
+    + '<div class="toprow"><div class="badge">' + (marc ? ICO.check : ICO.onda) + '</div><span class="meta">' + esc(dataCurta(d)) + ' · ' + duracao(r.duracaoSeg) + '</span></div>'
     + '<h3>' + esc(r.titulo) + '</h3>'
     + (pessoas(r.participantes) || '<div class="people none">' + (r.status === 'transcrevendo' ? 'Nova gravação' : 'Você e a chamada') + '</div>')
-    + '<div class="row">' + acoes + '</div>'
     + sum
-    + '<button class="link" data-abrir="transcricao">Ver transcrição</button></article>';
+    + '<div class="foot">' + (p ? '<button class="ptag" data-proj="' + esc(p.id) + '" title="Abrir o projeto"><span>' + esc(p.nome) + '</span></button>' : '')
+    + (t[0] ? '<span class="meta" title="Tarefas abertas">' + t[0] + ' a fazer</span>' : '')
+    + '<span class="sp"></span><button class="bin" data-bin title="Apagar">' + ICO.lixo + '</button></div></article>';
 }
 function desenharCatalogo() {
   const q = S.q.trim().toLowerCase();
@@ -582,9 +675,9 @@ function desenharReuniao() {
     corpo = '<div class="empty in"><h3>A transcrição falhou</h3>' + esc(d.erro || 'Erro desconhecido.') + '<div class="hint">O áudio foi preservado.</div><button class="btn" id="retranscrever">Tentar de novo</button></div>';
   } else if (S.aba === 'minuta') {
     corpo = temResumo
-      ? '<div class="pane md" id="md">' + markdown(d.minuta) + '</div>'
-        + '<div class="ask"><h4>Continuar com o Claude</h4><p>Abre o Claude com o pedido já escrito sobre esta reunião. Você só confirma o envio.</p><div class="row">'
-        + PEDIDOS.map((x, i) => '<button class="btn' + (i === 0 ? ' pri' : '') + '" data-claude="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>'
+      ? '<div class="pane md' + (S.editar ? ' edit' : '') + '" id="md">' + comFicha(d) + '</div>'
+        + (S.editar ? '' : '<div class="ask"><h4>Continuar com o Claude</h4><p>Abre o Claude com o pedido já escrito sobre esta reunião. Você só confirma o envio.</p><div class="row">'
+        + PEDIDOS.map((x, i) => '<button class="btn' + (i === 0 ? ' pri' : '') + '" data-claude="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>')
       : '<div class="empty in"><h3>Ainda sem resumo</h3>O Claude lê a transcrição e escreve o resumo, os temas, as decisões e as pendências. Ele aparece aqui sozinho.'
         + '<br><button class="btn pri" data-claude="resumo">Enviar pro Claude</button><div class="hint">Abre o Claude com o pedido pronto. É só enviar.</div></div>';
   } else {
@@ -598,10 +691,97 @@ function desenharReuniao() {
     + '<div class="tabs"><button class="btn' + (S.aba === 'minuta' ? ' pri' : '') + '" data-aba="minuta">Resumo</button>'
     + '<button class="btn' + (S.aba === 'transcricao' ? ' pri' : '') + '" data-aba="transcricao">Transcrição</button>'
     + '<span class="sp"></span>'
-    + (temResumo ? '<button class="quiet" id="copiarMinuta">Copiar resumo</button>' : '')
-    + '<button class="quiet danger" id="apagar">Apagar</button></div>'
+    + (S.editar ? '<span class="meta">Editando. Clique em qualquer linha para mudar o texto.</span></div>'
+      : (temResumo ? '<button class="quiet" id="copiarMinuta">Copiar resumo</button>' : '') + '<button class="quiet danger" id="apagar">Apagar</button>'
+        + (temResumo && S.aba === 'minuta' ? '<button class="btn" id="editarResumo">Editar</button>' : '') + '</div>')
     + corpo + '</section>';
+  if (S.editar) prepararEdicao();
   progresso();
+}
+
+// ---------- editar o resumo na própria tela ----------
+function botaoRemover(li) { const b = document.createElement('button'); b.className = 'rm'; b.contentEditable = 'false'; b.title = 'Remover'; b.textContent = '×'; li.appendChild(b); }
+function prepararEdicao() {
+  const md = $('#md'); if (!md) return;
+  md.querySelectorAll(':scope > h2, :scope > h3, :scope > p, :scope > blockquote > p, :scope > ul > li:not(.todo), :scope > ol > li, li.todo > .tx').forEach((e) => { e.contentEditable = 'true'; e.spellcheck = false; e.classList.add('ed'); });
+  md.querySelectorAll('a.ts').forEach((e) => { e.contentEditable = 'false'; });
+  md.querySelectorAll(':scope > ul, :scope > ol').forEach((ul) => {
+    const b = document.createElement('button'), todo = !!ul.querySelector('li.todo');
+    b.className = 'addli'; b.dataset.todo = todo ? '1' : ''; b.textContent = todo ? '+ Tarefa' : '+ Item'; ul.after(b);
+    ul.querySelectorAll(':scope > li').forEach(botaoRemover);
+  });
+}
+function novoItem(lista, depois, todo) {
+  const li = document.createElement('li');
+  if (todo) { li.className = 'todo'; li.innerHTML = '<span class="tx ed" contenteditable="true" spellcheck="false"></span><button class="due none" title="Definir prazo">+ prazo</button>'; }
+  else { li.className = 'ed'; li.contentEditable = 'true'; li.spellcheck = false; }
+  botaoRemover(li);
+  if (depois) depois.after(li); else lista.appendChild(li);
+  (li.querySelector('.tx') || li).focus();
+}
+function teclaEdicao(ev) {
+  const e = ev.target.closest('.ed'); if (!e) return;
+  const li = e.closest('li');
+  if (ev.key === 'Enter') { ev.preventDefault(); if (li) novoItem(li.parentNode, li, li.classList.contains('todo')); else e.blur(); return; }
+  if (ev.key === 'Escape') return e.blur();
+  if (ev.key === 'Backspace' && li && !textoDe(e).trim()) {
+    ev.preventDefault();
+    const ant = li.previousElementSibling; li.remove();
+    if (ant) { const a = ant.querySelector('.tx') || ant; a.focus(); const s = getSelection(); s.selectAllChildren(a); s.collapseToEnd(); }
+  }
+}
+function textoDe(el) {
+  let t = '';
+  el.childNodes.forEach((n) => {
+    if (n.nodeType === 3) { t += n.nodeValue; return; }
+    if (n.nodeType !== 1 || n.classList.contains('rm') || n.classList.contains('due') || n.classList.contains('duein')) return;
+    const bruto = n.tagName === 'BR' ? ' ' : textoDe(n), x = bruto.trim(), a = /^\s/.test(bruto) ? ' ' : '', b = /\s$/.test(bruto) ? ' ' : '';
+    if (n.classList.contains('ts')) t += '[' + x + ']';
+    else if (n.classList.contains('duv')) t += x ? a + '{?' + x + '}' + b : '';
+    else if (n.tagName === 'STRONG' || n.tagName === 'B') t += x ? a + '**' + x + '**' + b : bruto;
+    else if (n.tagName === 'EM' || n.tagName === 'I') t += x ? a + '*' + x + '*' + b : bruto;
+    else if (n.tagName === 'CODE') t += x ? a + '`' + x + '`' + b : '';
+    else t += bruto;
+  });
+  return t.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ');
+}
+function resumoEditado() {
+  const orig = S.det.minuta.split('\n'), out = [];
+  const h1 = orig.find((l) => /^#\s/.test(l)); if (h1) out.push(h1, '');
+  const s = secaoProjeto(orig); let ficha = s ? orig.slice(s[0], s[1]).filter((l) => l.trim()) : null;
+  const poeFicha = () => { if (ficha) { out.push('', ...ficha, ''); ficha = null; } };
+  Array.from($('#md').children).forEach((el) => {
+    const tag = el.tagName;
+    if (el.classList.contains('fbox')) return poeFicha();
+    if (tag === 'BLOCKQUOTE') { const t = textoDe(el).trim(); if (t) out.push('> ' + t, ''); return; }
+    if (tag === 'H2' || tag === 'H3') { const t = textoDe(el).trim(); if (t) out.push('', (tag === 'H2' ? '## ' : '### ') + t); return; }
+    if (tag === 'P') { const t = textoDe(el).trim(); if (t) out.push(t, ''); return; }
+    if (tag === 'HR') { out.push('', '---', ''); return; }
+    if (tag === 'UL' || tag === 'OL') {
+      let n = 0;
+      el.querySelectorAll(':scope > li').forEach((li) => {
+        if (!li.classList.contains('todo')) { const t = textoDe(li).trim(); if (t) out.push((tag === 'OL' ? (++n) + '. ' : '- ') + t); return; }
+        let t = textoDe(li.querySelector('.tx')).trim(); if (!t) return;
+        const due = li.querySelector('.due:not(.none)'), pz = due ? due.textContent.trim() : '';
+        if (pz) { const ts = t.match(/(\s*\[\d{1,2}:\d{2}(?::\d{2})?\])+\s*$/); t = ts ? t.slice(0, ts.index) + ' (prazo: ' + pz + ')' + ts[0] : t + ' (prazo: ' + pz + ')'; }
+        out.push('- [' + (li.classList.contains('done') ? 'x' : ' ') + '] ' + t);
+      });
+      return;
+    }
+    if (tag === 'TABLE' && el.rows.length) {
+      const linhas = Array.from(el.rows).map((r) => '| ' + Array.from(r.cells).map((c) => textoDe(c).trim()).join(' | ') + ' |');
+      linhas.splice(1, 0, '|' + Array.from(el.rows[0].cells).map(() => ' --- ').join('|') + '|'); out.push('', ...linhas, '');
+    }
+  });
+  poeFicha();
+  return out.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+}
+function fimEdicao(salvar) {
+  if (!S.editar) return;
+  const novo = salvar && $('#md') && S.det ? resumoEditado() : null;
+  S.editar = false; desenharTopo();
+  if (novo && novo.trim() !== S.det.minuta.trim()) { S.det.minuta = novo; salvarResumo(); aviso('Resumo salvo.'); }
+  else if (S.det) { const r = $('#view').scrollTop; desenharReuniao(); $('#view').scrollTop = r; }
 }
 
 // ---------- pendências: marcar como feita e definir prazo (grava de volta no resumo) ----------
@@ -668,9 +848,179 @@ function editarPrazo(botao) {
   inp.focus();
   try { inp.showPicker(); } catch (e) {}
   let feito = false;
-  inp.addEventListener('change', () => { feito = true; definirPrazo(n, inp.value); });
-  inp.addEventListener('blur', () => { if (!feito) { const r = $('#view').scrollTop; desenharReuniao(); $('#view').scrollTop = r; } });
+  inp.addEventListener('change', () => {
+    feito = true;
+    if (!S.editar) return definirPrazo(n, inp.value);
+    const [a, m, d] = (inp.value || '').split('-');
+    botao.className = inp.value ? 'due' : 'due none'; botao.textContent = inp.value ? d + '/' + m + (+a !== new Date().getFullYear() ? '/' + a : '') : '+ prazo';
+    inp.replaceWith(botao);
+  });
+  inp.addEventListener('blur', () => { if (feito) return; if (S.editar) return inp.replaceWith(botao); const r = $('#view').scrollTop; desenharReuniao(); $('#view').scrollTop = r; });
   inp.addEventListener('click', (e) => e.stopPropagation());
+}
+
+// ---------- projetos: ficha, página e envio em conjunto ----------
+const CAMPOS = ['Cliente', 'Construtora', 'Local', 'Entrega', 'Valor', 'Pagamento', 'Prazo'];
+function projeto(id) { return S.projetos.find((p) => p.id === id); }
+function secaoProjeto(L) {
+  const a = L.findIndex((l) => /^##\s+Projeto\s*$/i.test(l));
+  if (a < 0) return null;
+  let b = a + 1; while (b < L.length && !/^##\s/.test(L[b])) b++;
+  return [a, b];
+}
+function fichaDe(src) {
+  const L = String(src || '').split('\n'), s = secaoProjeto(L), f = {};
+  if (!s) return null;
+  for (let i = s[0] + 1; i < s[1]; i++) { const m = L[i].match(/^\s*[-*]\s+\*\*([^:*]+):?\*\*:?\s*(.*)$/); if (m) f[m[1].trim()] = m[2].trim(); }
+  return f;
+}
+function gravarFicha(src, f) {
+  const L = String(src).split('\n'), s = secaoProjeto(L);
+  if (s) L.splice(s[0] + 1, s[1] - s[0] - 1, ...Object.keys(f).map((k) => '- **' + k + ':** ' + f[k]));
+  return L.join('\n');
+}
+function fichaHtml(f, p, naReuniao) {
+  const chaves = CAMPOS.concat(Object.keys(f).filter((k) => !CAMPOS.includes(k)));
+  return '<div class="fbox"' + (p ? ' data-proj-ficha="' + esc(p.id) + '"' : '') + '><div class="fhead"><span>Ficha do projeto</span><span class="sp"></span>'
+    + (!naReuniao ? '' : p ? '<button class="ptag" data-proj="' + esc(p.id) + '" title="Abrir o projeto"><span>' + esc(p.nome) + '</span></button>' : '<button class="quiet" data-agrupar>Colocar num projeto</button>')
+    + '</div><div class="ficha">' + chaves.map((k) => '<label class="fc"><span class="fl">' + esc(k) + '</span><span class="fv" contenteditable="true" spellcheck="false" data-campo="' + esc(k) + '">'
+      + esc(String(f[k] || '').replace(/\{\?([^}]+)\}/g, '$1')) + '</span></label>').join('') + '</div></div>';
+}
+function comFicha(d) {
+  const p = d.projeto && projeto(d.projeto), f = p ? p.ficha : fichaDe(d.minuta), md = markdown(d.minuta);
+  if (!f) return md;
+  const bloco = fichaHtml(f, p, true);
+  return md.includes('</blockquote>') ? md.replace('</blockquote>', '</blockquote>' + bloco) : bloco + md;
+}
+function salvarCampo(el) {
+  const campo = el.dataset.campo, v = el.textContent.replace(/\s+/g, ' ').trim(), pid = el.closest('.fbox').dataset.projFicha;
+  if (!v) el.textContent = '';
+  if (pid) {
+    const p = projeto(pid); if (!p || (p.ficha[campo] || '') === v) return;
+    p.ficha[campo] = v; chamar('salvarProjeto', { id: pid, ficha: p.ficha });
+  } else if (S.det) {
+    const f = fichaDe(S.det.minuta) || {}; if ((f[campo] || '') === v) return;
+    f[campo] = v; S.det.minuta = gravarFicha(S.det.minuta, f); chamar('salvarResumo', { id: S.det.id, texto: S.det.minuta });
+  }
+}
+async function abrirProjeto(id) {
+  if (!projeto(id)) return;
+  S.marc = new Set(); S.armado = false; S.proj = id; S.sel = null; S.det = null; S.projDet = {};
+  await Promise.all(S.lista.filter((r) => r.projeto === id && r.temMinuta).map(async (r) => { S.projDet[r.id] = await chamar('abrir', { id: r.id }); }));
+  S.animar = true; desenhar(); desenharDoca(); $('#view').scrollTop = 0;
+}
+function desenharProjeto() {
+  const p = projeto(S.proj);
+  if (!p) { S.proj = null; return desenharCatalogo(); }
+  const rs = S.lista.filter((r) => r.projeto === p.id), anima = S.animar !== false; S.animar = false;
+  let tarefas = '', feitas = 0;
+  rs.forEach((r) => {
+    const d = S.projDet[r.id]; if (!d || !d.minuta) return;
+    const { L, idx } = linhasDeTarefa(d.minuta);
+    idx.forEach((i, k) => {
+      const m = L[i].match(RE_TAREFA); if (m[1] !== ' ') { feitas++; return; }
+      const t = L[i].replace(RE_TAREFA, ''), pm = t.match(RE_PRAZO), dt = pm ? dataDoPrazo(pm[1].trim()) : null, hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+      tarefas += '<li class="todo" data-de="' + esc(r.id) + '" data-n="' + k + '"><span class="tx">' + inline(t.replace(RE_PRAZO, '')) + '</span>'
+        + (rs.length > 1 ? '<span class="from">' + esc(r.titulo) + '</span>' : '')
+        + (pm ? '<span class="due fixo' + (dt && dt < hoje ? ' late' : '') + '">' + esc(pm[1].trim()) + '</span>' : '') + '</li>';
+    });
+  });
+  $('#wrap').innerHTML = '<section class="sheet wide">'
+    + '<span class="meta">Projeto · ' + rs.length + (rs.length === 1 ? ' reunião' : ' reuniões') + ' · ' + duracao(rs.reduce((a, r) => a + (r.duracaoSeg || 0), 0)) + '</span>'
+    + '<div class="title" id="nomeDoProjeto" contenteditable="true" spellcheck="false">' + esc(p.nome) + '</div>'
+    + fichaHtml(p.ficha, p, false)
+    + '<div class="md"><h2>Tarefas abertas</h2>' + (tarefas ? '<ul>' + tarefas + '</ul>' : '<p>Nenhuma tarefa aberta.</p>')
+    + (feitas ? '<p class="meta">' + feitas + (feitas === 1 ? ' concluída' : ' concluídas') + '</p>' : '') + '</div>'
+    + '<h2 class="sec">Reuniões</h2><div class="grid">' + rs.map((r, n) => cartao(r, n, anima, true)).join('') + '</div>'
+    + '<div class="pfim"><button class="quiet danger" id="desfazerProj">Desfazer projeto</button></div></section>';
+}
+function marcarTarefaDe(id, n) {
+  const d = S.projDet[id]; if (!d) return;
+  const { L, idx } = linhasDeTarefa(d.minuta); if (idx[n] == null) return;
+  L[idx[n]] = L[idx[n]].replace(/\[( |x|X)\]/, '[x]');
+  d.minuta = L.join('\n'); chamar('salvarResumo', { id, texto: d.minuta });
+  const r = $('#view').scrollTop; desenharProjeto(); $('#view').scrollTop = r; aviso('Tarefa concluída.');
+}
+async function enviarConjunto(rs, nome) {
+  const n = rs.length; if (!n) return;
+  const base = CFG.pasta.real || CFG.pasta.caminho;
+  const texto = (n === 1 ? 'Com base na reunião' : 'Juntando as ' + n + ' reuniões') + (nome ? ' do projeto "' + nome + '"' : '') + ' do Goat Meet, me entrega o resumo do projeto: ficha, tarefas abertas, decisões e o que mudou de uma reunião para a outra. As pastas são: '
+    + rs.map((r) => '"' + base + '/' + r.id + '" (' + r.titulo + ')').join('; ') + '. O guia está em "' + base + '/_claude/COMO FAZER O RESUMO.md".';
+  if (!nativo) return aviso('No app, isso abre o Claude com ' + (n === 1 ? 'a reunião' : 'as ' + n + ' reuniões') + ' no pedido.');
+  const resp = await chamar('claude', { texto });
+  if (resp && resp.ok) return aviso('Abrindo o Claude com o pedido pronto.');
+  await chamar('copiar', { texto }); aviso('Pedido copiado. Cole no chat do Claude.');
+}
+
+// ---------- seleção de várias, menu do botão direito e exclusão ----------
+function redesenharLista() {
+  if (!S.sel) { const r = $('#view').scrollTop; if (S.proj) desenharProjeto(); else desenharCatalogo(); $('#view').scrollTop = r; }
+  desenharBarra();
+}
+function marcar(id) { if (S.marc.has(id)) S.marc.delete(id); else S.marc.add(id); S.armado = false; redesenharLista(); }
+function limparMarc() { if (!S.marc.size && !S.armado) return; S.marc = new Set(); S.armado = false; redesenharLista(); }
+function desenharBarra() {
+  const el = $('#selbar'), n = S.marc.size;
+  if (!n || S.sel || (S.menu && S.menu.temp)) { el.hidden = true; return; }
+  el.hidden = false;
+  el.innerHTML = '<b>' + n + (n === 1 ? ' selecionada' : ' selecionadas') + '</b><button data-sb="agrupar">Agrupar</button><button data-sb="claude">Enviar pro Claude</button>'
+    + '<button class="del' + (S.armado ? ' sure' : '') + '" data-sb="apagar">' + (S.armado ? (n === 1 ? 'Apagar mesmo?' : 'Apagar ' + n + ' mesmo?') : 'Apagar') + '</button><button class="x" data-sb="x" title="Limpar seleção">×</button>';
+}
+async function apagarVarias(ids) {
+  for (const id of ids) { if (S.som && S.som.id === id) { audio.pause(); audio.removeAttribute('src'); S.som = null; } await chamar('apagar', { id }); }
+  S.marc = new Set(); S.armado = false; S.menu = null; $('#menu').hidden = true;
+  aviso(ids.length === 1 ? 'Reunião movida para o Lixo.' : ids.length + ' reuniões movidas para o Lixo.');
+  desenharDoca(); await carregarLista(true); desenharTopo(); desenharBarra();
+}
+function armarApagar() {
+  if (S.armado) return apagarVarias([...S.marc]);
+  S.armado = true; desenharBarra();
+  clearTimeout(armarApagar.t); armarApagar.t = setTimeout(() => { S.armado = false; desenharBarra(); }, 4000);
+}
+function abrirMenu(x, y, modo, temp, acima) { S.menu = { x, y, modo: modo || 'tudo', temp: !!temp, acima: !!acima, novo: false, certo: false }; desenharMenu(); desenharBarra(); }
+function fecharMenu() { if (!S.menu) return; const temp = S.menu.temp; S.menu = null; $('#menu').hidden = true; if (temp) limparMarc(); else desenharBarra(); }
+function desenharMenu() {
+  const m = S.menu, el = $('#menu');
+  if (!m) { el.hidden = true; return; }
+  const rs = S.lista.filter((r) => S.marc.has(r.id)), n = rs.length, um = n === 1 ? rs[0] : null;
+  const pronta = (r) => r.status !== 'transcrevendo' && r.status !== 'erro';
+  const mi = (a, t, extra) => '<button class="mi' + (extra || '') + '" data-m="' + a + '"><span>' + t + '</span></button>';
+  let h = '';
+  if (m.novo) h = '<div class="lab">Novo projeto</div><div class="novo"><input id="nomeProj" placeholder="Nome do projeto" spellcheck="false"><button class="btn pri" data-m="criar">Criar</button></div>';
+  else {
+    if (m.modo === 'tudo') {
+      if (um) h += mi('abrir', 'Abrir') + (pronta(um) ? mi('ouvir', 'Ouvir') : '');
+      if (rs.some(pronta)) h += mi('claude', um ? 'Enviar pro Claude' : 'Enviar ' + n + ' pro Claude');
+      h += '<div class="sep"></div>';
+    }
+    h += '<div class="lab">' + (um ? 'Projeto' : 'Agrupar ' + n + ' reuniões') + '</div>';
+    S.projetos.forEach((p) => { h += '<button class="mi' + (rs.every((r) => r.projeto === p.id) ? ' on' : '') + '" data-m="proj" data-id="' + esc(p.id) + '"><span>' + esc(p.nome) + '</span></button>'; });
+    h += mi('novo', 'Novo projeto…');
+    if (rs.some((r) => r.projeto)) h += mi('tirar', 'Tirar do projeto');
+    if (m.modo === 'tudo') h += '<div class="sep"></div><button class="mi danger' + (m.certo ? ' sure' : '') + '" data-m="apagar"><span>' + (m.certo ? 'Apagar mesmo?' : um ? 'Apagar' : 'Apagar ' + n) + '</span>' + (m.certo ? '' : '<span class="k">⌫</span>') + '</button>';
+  }
+  el.innerHTML = h; el.hidden = false;
+  const w = el.offsetWidth, a = el.offsetHeight;
+  el.style.left = Math.max(8, Math.min(m.x, innerWidth - w - 8)) + 'px';
+  el.style.top = Math.max(8, Math.min(m.acima ? m.y - a : m.y, innerHeight - a - 8)) + 'px';
+  if (m.novo) $('#nomeProj').focus();
+}
+async function acaoMenu(a, pid) {
+  const m = S.menu, ids = [...S.marc], rs = S.lista.filter((r) => S.marc.has(r.id));
+  if (!m) return;
+  if (a === 'novo') { m.novo = true; return desenharMenu(); }
+  if (a === 'apagar') { if (!m.certo) { m.certo = true; return desenharMenu(); } return apagarVarias(ids); }
+  let nome = '';
+  if (a === 'criar') { nome = $('#nomeProj').value.trim(); if (!nome) return $('#nomeProj').focus(); }
+  S.menu = null; $('#menu').hidden = true;
+  if (a === 'abrir') { S.marc = new Set(); return abrir(ids[0]); }
+  if (a === 'ouvir') { limparMarc(); return ouvir(ids[0]); }
+  if (a === 'claude') { limparMarc(); const p = rs.filter((r) => r.status !== 'transcrevendo' && r.status !== 'erro'); return p.length === 1 ? enviarClaude(p[0].id) : enviarConjunto(p); }
+  if (a === 'criar' || a === 'proj') { await chamar('agrupar', a === 'criar' ? { ids, nome } : { ids, projeto: pid }); nome = nome || (projeto(pid) || {}).nome; }
+  if (a === 'tirar') await chamar('desagrupar', { ids });
+  S.marc = new Set(); S.armado = false;
+  await carregarLista(true); desenharTopo(); desenharBarra();
+  aviso(a === 'tirar' ? 'Fora do projeto.' : (ids.length === 1 ? 'Reunião' : ids.length + ' reuniões') + ' no projeto "' + nome + '".');
 }
 
 // ---------- configurações ----------
@@ -791,29 +1141,33 @@ function mostrarProx(p) {
   if (!S.prox || S.prox.inicio - Date.now() < 30000) return;
   proxT = setTimeout(() => { $('#prox').classList.add('out'); setTimeout(() => { if (S.prox) S.prox.oculto = true; desenharProx(); }, 260); }, 30000);
 }
-function desenhar() { desenharTopo(); if (S.sel) desenharReuniao(); else desenharCatalogo(); }
+function desenhar() { if (!S.sel) S.editar = false; desenharTopo(); if (S.sel) desenharReuniao(); else if (S.proj) desenharProjeto(); else desenharCatalogo(); desenharBarra(); }
 
 // Texto de comparação que não depende da ordem em que o app manda os campos (ela muda de uma chamada para outra).
 function igual(v) { return JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)) ? Object.keys(x).sort().reduce((o, c) => { o[c] = x[c]; return o; }, {}) : x); }
 let assinaturaLista = '';
 async function carregarLista(forcar) {
-  const l = await chamar('listar') || [];
-  const a = igual(l);
+  const l = await chamar('listar') || [], p = await chamar('projetos') || [];
+  const a = igual([l, p]);
   if (a === assinaturaLista && !forcar) return;
+  if (!forcar && (editando() || S.menu)) return;
   const antes = S.lista.find((r) => r.id === S.sel);
-  assinaturaLista = a; S.lista = l;
+  assinaturaLista = a; S.lista = l; S.projetos = p;
+  S.marc.forEach((id) => { if (!l.some((r) => r.id === id)) S.marc.delete(id); });
+  if (S.proj && !l.some((r) => r.projeto === S.proj)) { S.proj = null; desenharTopo(); }
   const agora = S.lista.find((r) => r.id === S.sel);
   if (S.sel && !agora) { S.sel = null; S.det = null; desenhar(); return; }
   if (S.sel) {
-    if (antes && agora && igual(agora) !== igual(antes) && !editando()) {
+    if (antes && agora && igual(agora) !== igual(antes)) {
       if (agora.temMinuta && !antes.temMinuta) S.aba = 'minuta';
       abrir(S.sel, S.aba, true);
     }
-  } else desenharCatalogo();
+  } else redesenharLista();
 }
-function editando() { return document.activeElement && document.activeElement.id === 'titulo'; }
+function editando() { const e = document.activeElement; return S.editar || !!e && (e.id === 'titulo' || e.id === 'nomeDoProjeto' || e.id === 'nomeProj' || (e.classList && e.classList.contains('fv'))); }
 
 async function abrir(id, aba, semRolar) {
+  if (S.editar && S.det && S.det.id !== id) fimEdicao(true);
   const d = await chamar('abrir', { id });
   if (!d || !d.id) return;
   S.sel = id; S.det = d;
@@ -829,8 +1183,13 @@ async function abrir(id, aba, semRolar) {
   if (!semRolar) $('#view').scrollTop = 0;
 }
 function voltar() {
-  S.sel = null; S.det = null; S.animar = true;
+  fimEdicao(true);
+  const daReuniao = !!S.sel;
+  if (daReuniao) { S.sel = null; S.det = null; } else S.proj = null;
+  S.animar = true;
   if (S.som && audio.paused) { audio.removeAttribute('src'); S.som = null; }
+  if (daReuniao && S.proj && projeto(S.proj)) return abrirProjeto(S.proj);
+  S.proj = daReuniao ? null : S.proj;
   desenhar(); desenharDoca();
 }
 
@@ -972,6 +1331,33 @@ document.addEventListener('mousedown', (ev) => {
 document.addEventListener('click', async (ev) => {
   const t = ev.target, alvo = (s) => t.closest(s);
   let el;
+  if ((el = alvo('[data-m]'))) return acaoMenu(el.dataset.m, el.dataset.id);
+  if (S.menu) { if (!alvo('#menu')) fecharMenu(); return; }
+  if (S.marc.size && !S.sel && !alvo('.card, .selbar, .gear, .calbtn, .pop, #fab, .dock, .prox')) limparMarc();
+  if (S.editar && alvo('#md')) {
+    if ((el = alvo('.rm'))) return void el.closest('li').remove();
+    if ((el = alvo('.addli'))) return novoItem(el.previousElementSibling, null, el.dataset.todo === '1');
+    if ((el = alvo('.due'))) return editarPrazo(el);
+    if ((el = alvo('li.todo')) && !alvo('.tx, .duein, .ts')) return void el.classList.toggle('done');
+    if (!alvo('.ts')) return;
+  }
+  if (alvo('#editarResumo')) { S.editar = true; desenharTopo(); const r = $('#view').scrollTop; desenharReuniao(); $('#view').scrollTop = r; return; }
+  if (alvo('#concluirEd')) return fimEdicao(true);
+  if (alvo('#cancelarEd')) return fimEdicao(false);
+  if ((el = alvo('[data-sb]'))) {
+    const a = el.dataset.sb, rs = S.lista.filter((r) => S.marc.has(r.id) && r.status !== 'transcrevendo' && r.status !== 'erro');
+    if (a === 'x') return limparMarc();
+    if (a === 'apagar') return armarApagar();
+    if (a === 'agrupar') { const b = el.getBoundingClientRect(); return abrirMenu(b.left, b.top - 10, 'proj', false, true); }
+    limparMarc(); return rs.length === 1 ? enviarClaude(rs[0].id) : enviarConjunto(rs);
+  }
+  if ((el = alvo('[data-proj]'))) return abrirProjeto(el.dataset.proj);
+  if ((el = alvo('[data-agrupar]'))) { const b = el.getBoundingClientRect(); S.marc = new Set([S.sel]); return abrirMenu(b.left, b.bottom + 8, 'proj', true); }
+  if (alvo('[data-claude-proj]')) { const p = projeto(S.proj); return enviarConjunto(S.lista.filter((r) => r.projeto === S.proj && r.status !== 'transcrevendo' && r.status !== 'erro'), p && p.nome); }
+  if ((el = alvo('#desfazerProj'))) {
+    if (el.dataset.certeza) { await chamar('apagarProjeto', { id: S.proj }); S.proj = null; await carregarLista(true); desenhar(); return aviso('Projeto desfeito. As reuniões continuam aqui.'); }
+    el.dataset.certeza = '1'; el.textContent = 'Desfazer mesmo? As reuniões continuam guardadas.'; setTimeout(() => { if (el.isConnected) { delete el.dataset.certeza; el.textContent = 'Desfazer projeto'; } }, 3500); return;
+  }
   if (alvo('#gear')) return S.pop === 'cfg' ? fecharConfig() : abrirConfig();
   if (alvo('#cal')) return S.pop === 'cal' ? fecharConfig() : abrirAgenda();
   if ((el = alvo('[data-ev-gravar]'))) { const e = S.agenda[+el.dataset.evGravar]; fecharConfig(); mostrarProx(null); if (e) { S.tituloPend = e.titulo; alternarGravacao(); } return; }
@@ -998,8 +1384,8 @@ document.addEventListener('click', async (ev) => {
   if (alvo('#liberarAgenda')) { await chamar('pedirAgenda'); await carregarConfig(); return desenharConfig(); }
   if (alvo('#cfgClaude')) { if (!CFG.claude.skill) { CFG.claude.skill = true; desenharConfig(); return aviso('No app, isso abre o Claude e conclui a conexão.'); } if (nativo) { const b = CFG.pasta.real; chamar('claude', { texto: 'Teste do Goat Meet: confirma que você consegue ler a pasta "' + b + '" e me diz quantas reuniões tem nela. O guia está em "' + b + '/_claude/COMO FAZER O RESUMO.md".' }); return aviso('Abrindo o Claude com o teste.'); } return aviso('No app, isso pede um resumo de teste ao Claude.'); }
   if ((el = alvo('[data-duv]'))) return corrigirNome(el);
-  if ((el = alvo('.due'))) return editarPrazo(el);
-  if ((el = alvo('li.todo')) && !alvo('.ts') && !alvo('.duein')) return marcarTarefa(+el.dataset.n);
+  if ((el = alvo('.due')) && !el.classList.contains('fixo')) return editarPrazo(el);
+  if ((el = alvo('li.todo')) && !alvo('.ts') && !alvo('.duein')) return el.dataset.de ? marcarTarefaDe(el.dataset.de, +el.dataset.n) : marcarTarefa(+el.dataset.n);
   if (alvo('#rec') || alvo('#parar')) return alternarGravacao();
   if (alvo('#voltar')) return voltar();
   if (alvo('#play')) return audio.paused ? audio.play() : audio.pause();
@@ -1007,15 +1393,20 @@ document.addEventListener('click', async (ev) => {
   if (alvo('#vel')) { const v = [1, 1.25, 1.5, 2]; audio.playbackRate = v[(v.indexOf(audio.playbackRate) + 1) % v.length]; $('#vel').textContent = audio.playbackRate + 'x'; return; }
   if ((el = alvo('#bar'))) { const r = el.getBoundingClientRect(); const total = audio.duration || 0; if (total) audio.currentTime = total * (ev.clientX - r.left) / r.width; return; }
   if ((el = alvo('.card'))) {
-    const id = el.dataset.id;
-    if ((el = alvo('[data-claude]'))) return enviarClaude(id, el.dataset.claude);
-    if (alvo('[data-ouvir]')) return ouvir(id);
-    const b = alvo('[data-abrir]');
-    return abrir(id, b ? b.dataset.abrir : null);
+    const id = el.dataset.id, b = alvo('[data-bin]');
+    if (b) {
+      if (b.classList.contains('sure')) return apagarVarias([id]);
+      b.classList.add('sure'); b.textContent = 'Apagar?';
+      setTimeout(() => { if (b.isConnected) { b.classList.remove('sure'); b.innerHTML = ICO.lixo; } }, 3000);
+      return;
+    }
+    if (ev.shiftKey || ev.metaKey) return marcar(id);
+    S.marc = new Set(); S.armado = false;
+    return abrir(id);
   }
   if ((el = alvo('[data-claude]'))) return enviarClaude(S.sel, el.dataset.claude);
-  if ((el = alvo('[data-aba]'))) { S.aba = el.dataset.aba; return desenharReuniao(); }
-  if ((el = alvo('[data-t]'))) { const v = el.dataset.t; return ouvir(S.sel, String(v).includes(':') ? segundos(v) : +v); }
+  if ((el = alvo('[data-aba]'))) { fimEdicao(true); S.aba = el.dataset.aba; return desenharReuniao(); }
+  if ((el = alvo('[data-t]'))) { const v = el.dataset.t, li = el.closest('[data-de]'); return ouvir(li ? li.dataset.de : S.sel, String(v).includes(':') ? segundos(v) : +v); }
   if (alvo('#pasta')) return chamar('pasta', { id: S.sel || '' });
   if (alvo('#copiarMinuta')) { await chamar('copiar', { texto: S.det.minuta }); return aviso('Resumo copiado.'); }
   if (alvo('#retranscrever')) { await chamar('retranscrever', { id: S.sel }); return carregarLista(true); }
@@ -1030,29 +1421,50 @@ document.addEventListener('click', async (ev) => {
     el.dataset.certeza = '1'; el.textContent = 'Apagar mesmo?'; setTimeout(() => { if (el.isConnected) { delete el.dataset.certeza; el.textContent = 'Apagar'; } }, 3000);
   }
 });
+document.addEventListener('contextmenu', (ev) => {
+  if (/INPUT/.test(ev.target.tagName) || ev.target.isContentEditable) return;
+  ev.preventDefault();
+  const c = ev.target.closest('.card');
+  if (S.menu) fecharMenu();
+  if (!c || S.sel) return;
+  const id = c.dataset.id, temp = !S.marc.has(id);
+  if (temp) { S.marc = new Set([id]); S.armado = false; redesenharLista(); }
+  abrirMenu(ev.clientX, ev.clientY, 'tudo', temp);
+});
 document.addEventListener('input', (ev) => {
-  if (ev.target.id === 'q') { S.q = ev.target.value; if (S.sel) { S.sel = null; S.det = null; desenhar(); } else desenharCatalogo(); }
+  if (ev.target.id === 'q') { fimEdicao(true); S.q = ev.target.value; if (S.sel || S.proj) { S.sel = null; S.det = null; S.proj = null; desenhar(); } else desenharCatalogo(); }
   if (ev.target.id === 'cfgNome') CFG.nome = ev.target.value;
   if (ev.target.id === 'novoTitulo') { S.tituloNovo = ev.target.value; chamar('rascunho', { titulo: S.tituloNovo }); }
 });
 document.addEventListener('keydown', (ev) => {
   const campo = /INPUT/.test(ev.target.tagName) || ev.target.isContentEditable;
   if (ev.target.id === 'novoAviso' && (ev.key === 'Enter' || ev.key === 'Escape')) { const v = Math.round(+ev.target.value), a = CFG.avisos; a.novo = false; if (ev.key === 'Enter' && v >= 1 && v <= 180) { if (!a.opcoes.includes(v)) a.opcoes.push(v); if (!a.antes.includes(v)) a.antes.push(v); guardar('avisos.opcoes', a.opcoes); guardar('avisos.antes', a.antes); } ev.stopPropagation(); return desenharConfig(); }
+  if (S.editar && ev.target.closest && ev.target.closest('#md.edit .ed')) return teclaEdicao(ev);
+  if (ev.target.id === 'nomeProj') { if (ev.key === 'Enter') acaoMenu('criar'); if (ev.key === 'Escape') fecharMenu(); return; }
+  if (S.menu) { if (ev.key === 'Escape') fecharMenu(); if (ev.key === 'Backspace' || ev.key === 'Delete') { ev.preventDefault(); acaoMenu('apagar'); } return; }
   if (ev.key === 'Escape' && !$('#veil').hidden) return fecharConfig();
-  if (ev.target.id === 'titulo' && ev.key === 'Enter') { ev.preventDefault(); ev.target.blur(); return; }
-  if (ev.target.id === 'titulo' && ev.key === 'Escape') { ev.target.textContent = S.det.titulo; ev.target.blur(); return; }
-  if (ev.key === 'Escape' && !campo && S.sel) return voltar();
+  const nomeavel = ev.target.id === 'titulo' || ev.target.id === 'nomeDoProjeto', fv = ev.target.classList && ev.target.classList.contains('fv');
+  if ((nomeavel || fv) && ev.key === 'Enter') { ev.preventDefault(); ev.target.blur(); return; }
+  if (nomeavel && ev.key === 'Escape') { ev.target.textContent = ev.target.id === 'titulo' ? S.det.titulo : projeto(S.proj).nome; ev.target.blur(); return; }
+  if (fv && ev.key === 'Escape') { ev.target.blur(); return; }
+  if (!campo && S.marc.size && !S.sel) {
+    if (ev.key === 'Escape') return limparMarc();
+    if (ev.key === 'Backspace' || ev.key === 'Delete' || (ev.key === 'Enter' && S.armado)) { ev.preventDefault(); return armarApagar(); }
+  }
+  if (ev.key === 'Escape' && !campo && (S.sel || S.proj)) return voltar();
   if (ev.key === ' ' && !campo && S.som) { ev.preventDefault(); audio.paused ? audio.play() : audio.pause(); }
 });
 document.addEventListener('focusout', async (ev) => {
   if (ev.target.id === 'novoAviso' && CFG.avisos.novo) { const v = Math.round(+ev.target.value), a = CFG.avisos; a.novo = false; if (v >= 1 && v <= 180) { if (!a.opcoes.includes(v)) a.opcoes.push(v); if (!a.antes.includes(v)) a.antes.push(v); guardar('avisos.opcoes', a.opcoes); guardar('avisos.antes', a.antes); } return desenharConfig(); }
   if (ev.target.id === 'cfgNome') guardar('nome', ev.target.value.trim());
+  if (ev.target.classList && ev.target.classList.contains('fv')) return salvarCampo(ev.target);
+  if (ev.target.id === 'nomeDoProjeto') { const p = projeto(S.proj), n = ev.target.textContent.trim(); if (!p) return; if (!n) { ev.target.textContent = p.nome; return; } if (n !== p.nome) { p.nome = n; await chamar('salvarProjeto', { id: p.id, nome: n }); } return; }
   if (ev.target.id !== 'titulo' || !S.det) return;
   const novo = ev.target.textContent.trim();
   if (!novo) { ev.target.textContent = S.det.titulo; return; }
   if (novo !== S.det.titulo) { S.det.titulo = novo; await chamar('renomear', { id: S.sel, titulo: novo }); carregarLista(true); }
 });
-document.addEventListener('paste', (ev) => { if (ev.target.id === 'titulo') { ev.preventDefault(); document.execCommand('insertText', false, (ev.clipboardData.getData('text/plain') || '').replace(/\s+/g, ' ')); } });
+document.addEventListener('paste', (ev) => { const onde = ev.target.nodeType === 1 ? ev.target : ev.target.parentElement; if (onde && onde.closest('#titulo, #nomeDoProjeto, .fv, .ed')) { ev.preventDefault(); document.execCommand('insertText', false, (ev.clipboardData.getData('text/plain') || '').replace(/\s+/g, ' ')); } });
 
 // ---------- início ----------
 (async function () {
@@ -1073,20 +1485,36 @@ document.addEventListener('paste', (ev) => { if (ev.target.id === 'titulo') { ev
 // ---------- dados de exemplo (só quando aberto fora do app) ----------
 function simulado(cmd, a) {
   const M = simulado.M || (simulado.M = dadosExemplo());
-  if (cmd === 'listar') return M.map((r) => ({ id: r.id, titulo: r.titulo, inicio: r.inicio, duracaoSeg: r.duracaoSeg, status: r.status, temMinuta: !!r.minuta, resumo: r.resumo, participantes: r.participantes }));
+  const P = simulado.P || (simulado.P = [
+    
+    { id: 'p2', nome: 'Campanha de lançamento', ficha: { Cliente: 'Incorporadora, via agência', Entrega: 'Filme de lançamento e peças de apoio', Prazo: 'Versão final na quinta' } }
+  ]);
+  const tarefas = (r) => { const t = String(r.minuta || '').split('\n').filter((l) => RE_TAREFA.test(l)); return [t.filter((l) => l.match(RE_TAREFA)[1] === ' ').length, t.length]; };
+  if (cmd === 'listar') return M.map((r) => ({ id: r.id, titulo: r.titulo, inicio: r.inicio, duracaoSeg: r.duracaoSeg, status: r.status, temMinuta: !!r.minuta, resumo: r.resumo, participantes: r.participantes, projeto: r.projeto || null, tarefas: tarefas(r) }));
+  if (cmd === 'projetos') return P.filter((p) => M.some((r) => r.projeto === p.id)).map((p) => ({ id: p.id, nome: p.nome, ficha: Object.assign({}, p.ficha) }));
+  if (cmd === 'agrupar') {
+    let p = P.find((x) => x.id === a.projeto);
+    if (!p) { p = { id: 'p' + Date.now(), nome: a.nome, ficha: {} }; P.push(p); }
+    M.forEach((r) => { if (!a.ids.includes(r.id)) return; r.projeto = p.id; const f = fichaDe(r.minuta) || {}; Object.keys(f).forEach((k) => { if (f[k] && !p.ficha[k]) p.ficha[k] = f[k]; }); });
+    return { id: p.id };
+  }
+  if (cmd === 'desagrupar') { M.forEach((r) => { if (a.ids.includes(r.id)) r.projeto = null; }); return {}; }
+  if (cmd === 'salvarProjeto') { const p = P.find((x) => x.id === a.id); if (p) { if (a.nome) p.nome = a.nome; if (a.ficha) p.ficha = a.ficha; } return {}; }
+  if (cmd === 'apagarProjeto') { M.forEach((r) => { if (r.projeto === a.id) r.projeto = null; }); return {}; }
   if (cmd === 'abrir') return M.find((r) => r.id === a.id) || null;
+  if (cmd === 'salvarResumo') { const r = M.find((x) => x.id === a.id); if (r) { r.minuta = a.texto; const m = a.texto.match(/^>\s?(.*)$/m); if (m) r.resumo = m[1].replace(/\{\?([^}]+)\}/g, '$1'); } return {}; }
   if (cmd === 'escolherPasta') return { caminho: CFG.pasta.caminho.includes('Documents') ? '~/Goat Meet/Meet' : '~/Documents/Trabalho/Meet' };
   if (cmd === 'agenda') {
     const em = (min) => new Date(Date.now() + min * 60000).toISOString();
-    const de = (id) => { const r = M.find((x) => x.id === id); return { inicio: r.inicio, fim: new Date(new Date(r.inicio).getTime() + r.duracaoSeg * 1000).toISOString() }; };
+    const de = (id) => { const r = M.find((x) => x.id === id); return r ? { inicio: r.inicio, fim: new Date(new Date(r.inicio).getTime() + r.duracaoSeg * 1000).toISOString() } : null; };
     const am = (h, m) => { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(h, m, 0, 0); return d.toISOString(); };
     return [
-      Object.assign({ titulo: 'Alinhamento de pauta', reuniaoId: 'b', criadoPeloApp: true }, de('b')),
-      Object.assign({ titulo: 'Ajustes do filme', reuniaoId: 'a' }, de('a')),
+      
+      de('a') && Object.assign({ titulo: 'Ajustes do filme', reuniaoId: 'a' }, de('a')),
       { titulo: 'Alinhamento semanal', inicio: em(5), fim: em(35) },
       { titulo: 'Revisão com o cliente', inicio: em(150), fim: em(195) },
       { titulo: 'Apresentação da versão final', inicio: am(10, 0), fim: am(11, 0), amanha: true }
-    ];
+    ].filter(Boolean);
   }
   if (cmd === 'estado') return { gravando: false, inicio: Date.now(), micOk: true };
   if (cmd === 'gravar') { setTimeout(() => window.goatEvento({ tipo: 'estado', gravando: true, inicio: Date.now() - 372000, micOk: true }), 100); simulado.n = setInterval(() => window.goatEvento({ tipo: 'niveis', eu: .25 + Math.random() * .5, outros: .1 + Math.random() * .4 }), 100); return {}; }
@@ -1114,8 +1542,16 @@ function dadosExemplo() {
   ].map(([t, quem, texto]) => ({ t, quem, texto }));
   const minuta = [
     '# Ajustes do filme',
-    '> Reunião de alinhamento da versão 3 do filme. Ficaram definidos três ajustes (cor da fachada, trilha e ordem de dois takes) e a entrega da versão final para quinta-feira, condicionada ao envio da trilha até terça.',
-    '## Temas',
+    '> Alinhamento da versão 3 do filme. Três ajustes definidos (cor da fachada, trilha e ordem de dois takes) e versão final na quinta, se a trilha chegar até terça.',
+    '## Tarefas',
+    '- [ ] **Agência** — enviar duas opções de trilha (prazo: 01/12)',
+    '- [ ] **Braz** — ajustar a cor da fachada e mandar frame para aprovação (prazo: 26/11) [00:42]',
+    '- [ ] **Braz** — inverter os takes de lazer e piscina',
+    '- [x] **Braz** — revisar a versão 3 antes da reunião',
+    '## Decisões',
+    '- Entrega da versão completa na **quinta-feira**',
+    '- Um frame da fachada com a cor nova vai para aprovação antes da exportação final',
+    '## O que foi falado',
     '### Cor da fachada',
     '- O cliente achou o revestimento frio em relação ao material aprovado [00:19]',
     '- Ajuste será feito no grade, sem novo render [00:42]',
@@ -1125,24 +1561,44 @@ function dadosExemplo() {
     '- Trocar a trilha exige reeditar os primeiros 20 segundos',
     '### Ordem das cenas',
     '- Lazer da cobertura deve vir antes da piscina, seguindo a ordem do book [01:23]',
-    '## Decisões',
-    '- Entrega da versão completa na **quinta-feira**',
-    '- Um frame da fachada com a cor nova vai para aprovação antes da exportação final',
-    '## Pendências',
-    '- [ ] **Agência** — enviar duas opções de trilha (prazo: 01/12)',
-    '- [ ] **Braz** — ajustar a cor da fachada e mandar frame para aprovação (prazo: 26/11) [00:42]',
-    '- [ ] **Braz** — inverter os takes de lazer e piscina',
-    '- [x] **Braz** — revisar a versão 3 antes da reunião',
     '## Em aberto',
     '- Quem aprova o frame da fachada: a agência ou direto a incorporadora?'
   ].join('\n');
+  const kickoff = [
+    '# Kickoff da campanha de lançamento',
+    '> Escopo do filme e das peças de apoio, cronograma em três entregas e quem aprova cada etapa. O roteiro fica com a agência; o animatic sai em duas semanas.',
+    '## Tarefas',
+    '- [ ] **Braz** — entregar o animatic (prazo: 08/12)',
+    '- [x] **Agência** — enviar o roteiro',
+    '## Decisões',
+    '- Três entregas: animatic, versão 1 e versão final',
+    '## Em aberto',
+    '- Formato vertical entra no escopo?'
+  ].join('\n');
+  const orc = [
+    '# Orçamento das animações de painel',
+    '> Proposta por projeto, com duas rodadas de ajuste incluídas. Prazo de 15 dias a partir da aprovação do storyboard.',
+    '## Projeto',
+    '- **Cliente:** Rui Prado',
+    '- **Construtora:** ',
+    '- **Local:** ',
+    '- **Entrega:** Animações de painel',
+    '- **Valor:** ',
+    '- **Pagamento:** ',
+    '- **Prazo:** 15 dias depois do storyboard aprovado',
+    '## Tarefas',
+    '- [ ] **Braz** — mandar a proposta por escrito',
+    '## Em aberto',
+    '- O valor não foi fechado na chamada'
+  ].join('\n');
   const base = { segmentos: seg, audio: null, ondas };
   return [
-    Object.assign({ id: 'a', titulo: 'Ajustes do filme', inicio: h(0, 10, 40), duracaoSeg: 2280, agenda: { tipo: 'criado' }, status: 'pronta', resumo: 'Reunião de alinhamento da versão 3 do filme. Ficaram definidos três ajustes (cor da fachada, trilha e ordem de dois takes) e a entrega da versão final para quinta-feira, condicionada ao envio da trilha até terça.', participantes: ['Braz', 'Marina Lopes'], minuta }, base),
+    
+    Object.assign({ id: 'a', titulo: 'Ajustes do filme', inicio: h(0, 10, 40), duracaoSeg: 2280, agenda: { tipo: 'criado' }, status: 'pronta', resumo: 'Alinhamento da versão 3 do filme. Três ajustes definidos (cor da fachada, trilha e ordem de dois takes) e versão final na quinta, se a trilha chegar até terça.', participantes: ['Braz', 'Marina Lopes'], minuta, projeto: 'p2' }, base),
     Object.assign({ id: 'b', titulo: 'Alinhamento de pauta', inicio: h(0, 9, 5), duracaoSeg: 940, agenda: { tipo: 'criado' }, status: 'pronta', resumo: '', participantes: [], minuta: null }, base),
     Object.assign({ id: 'c', titulo: 'Reunião 26/11 16:00', inicio: h(1, 16, 0), duracaoSeg: 3120, agenda: { tipo: 'criado' }, status: 'transcrevendo', resumo: '', participantes: [], minuta: null }, base, { segmentos: [] }),
-    Object.assign({ id: 'd', titulo: 'Kickoff da campanha de lançamento', inicio: h(4, 14, 30), duracaoSeg: 4260, agenda: { tipo: 'evento', titulo: 'Kickoff campanha' }, status: 'pronta', resumo: 'Escopo do filme e das peças de apoio, cronograma em três entregas e definição de quem aprova cada etapa. O roteiro fica com a agência; o animatic sai em duas semanas.', participantes: ['Braz', 'Carla Dias', 'Pedro Antunes', 'Lia Moura'], minuta }, base),
-    Object.assign({ id: 'e', titulo: 'Orçamento das animações de painel', inicio: h(19, 11, 0), duracaoSeg: 1500, agenda: { tipo: 'criado' }, status: 'pronta', resumo: 'Proposta por projeto, com duas rodadas de ajuste incluídas. Prazo de 15 dias a partir da aprovação do storyboard.', participantes: ['Braz', 'Rui Prado'], minuta }, base)
+    Object.assign({ id: 'd', titulo: 'Kickoff da campanha de lançamento', inicio: h(4, 14, 30), duracaoSeg: 4260, agenda: { tipo: 'evento', titulo: 'Kickoff campanha' }, status: 'pronta', resumo: 'Escopo do filme e das peças de apoio, cronograma em três entregas e quem aprova cada etapa. O roteiro fica com a agência; o animatic sai em duas semanas.', participantes: ['Braz', 'Carla Dias', 'Pedro Antunes', 'Lia Moura'], minuta: kickoff, projeto: 'p2' }, base),
+    Object.assign({ id: 'e', titulo: 'Orçamento das animações de painel', inicio: h(19, 11, 0), duracaoSeg: 1500, agenda: { tipo: 'criado' }, status: 'pronta', resumo: 'Proposta por projeto, com duas rodadas de ajuste incluídas. Prazo de 15 dias a partir da aprovação do storyboard.', participantes: ['Braz', 'Rui Prado'], minuta: orc }, base)
   ];
 }
 </script>

@@ -2,6 +2,14 @@
 
 Gravador de reuniões para macOS, feito para uso próprio. Grava o som do computador e o microfone, transcreve tudo no próprio Mac e guarda cada reunião em uma pasta. Os resumos são escritos pelo Claude a partir da transcrição. Sem assinatura e sem robô entrando na chamada.
 
+## O que o app faz
+
+- Grava a chamada e o microfone e transcreve no próprio Mac (whisper.cpp).
+- Registra cada gravação na agenda, com a hora real de início e fim, e avisa antes das reuniões marcadas.
+- Mostra cada reunião em um cartão com um micro resumo. Botão direito, Shift + clique para marcar várias e tecla de apagar.
+- Agrupa reuniões em projetos, com uma ficha (cliente, construtora, local, entrega, valor, pagamento, prazo) e as tarefas abertas de todas as reuniões juntas.
+- O resumo é editável na tela e segue sempre a mesma ordem: ficha, tarefas, decisões, conceito do filme, o que foi falado e em aberto.
+
 ## O que tem aqui
 
 - `Instalar Goat Meet.command`: instalador. Confere o macOS, instala as ferramentas da Apple, o Homebrew, o whisper.cpp, baixa o modelo de transcrição e monta o app.
